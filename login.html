@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — CMS Montes Claros</title>
+  <meta name="description" content="Acesso ao sistema de documentos do Conselho Municipal de Saúde de Montes Claros">
+  <meta name="theme-color" content="#0D2E5A">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ── Loading Screen ───────────────────────────────────── -->
+  <div id="loading-screen">
+    <img
+      src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png"
+      alt="CMS Montes Claros"
+      class="loading-logo"
+    >
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando</p>
+  </div>
+
+  <!-- ── Toast Container ──────────────────────────────────── -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- ── Página de Login ──────────────────────────────────── -->
+  <main class="login-page">
+
+    <!-- Painel esquerdo — Visual institucional -->
+    <div class="login-panel-left" aria-hidden="true">
+      <div class="login-brand">
+        <img
+          src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png"
+          alt="Conselho Municipal de Saúde de Montes Claros"
+          class="login-logo"
+        >
+        <h1 class="login-tagline">
+          Transparência<br>e <em>controle<br>social</em> em<br>evidência.
+        </h1>
+        <p class="login-sub">
+          Sistema de acesso a documentos institucionais do
+          Conselho Municipal de Saúde de Montes Claros.
+        </p>
+      </div>
+
+      <div class="login-features">
+        <div class="login-feature">
+          <div class="login-feature-dot"></div>
+          <span>Documentos organizados e indexados</span>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-dot"></div>
+          <span>Busca inteligente por título e conteúdo</span>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-dot"></div>
+          <span>Acesso offline a documentos já abertos</span>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-dot"></div>
+          <span>Instale como app no seu celular</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Painel direito — Formulário -->
+    <div class="login-panel-right">
+      <div class="login-form-wrap">
+
+        <div class="login-form-header">
+          <p class="login-form-eyebrow">Área Restrita</p>
+          <h2 class="login-form-title">Acesso ao<br>Sistema</h2>
+          <p class="login-form-desc">
+            Use suas credenciais fornecidas pela Secretaria Executiva.
+          </p>
+        </div>
+
+        <form id="login-form" novalidate>
+
+          <!-- Seleção de conselheiro -->
+          <div class="form-group">
+            <label class="form-label" for="select-conselheiro">
+              Conselheiro
+            </label>
+            <div class="select-wrapper">
+              <select
+                id="select-conselheiro"
+                class="form-control"
+                required
+                aria-label="Selecione seu nome"
+              >
+                <option value="">Carregando lista...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Senha -->
+          <div class="form-group">
+            <label class="form-label" for="input-senha">
+              Senha
+            </label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="input-senha"
+                class="form-control"
+                placeholder="Digite sua senha"
+                required
+                autocomplete="current-password"
+                aria-label="Senha de acesso"
+              >
+              <span
+                class="password-toggle"
+                id="toggle-password"
+                title="Mostrar/ocultar senha"
+                role="button"
+                tabindex="0"
+                aria-label="Alternar visibilidade da senha"
+              >👁</span>
+            </div>
+          </div>
+
+          <!-- Mensagem de erro -->
+          <div
+            id="login-error"
+            class="form-error hidden"
+            role="alert"
+            aria-live="assertive"
+          >
+            <span>⚠️</span>
+            <span id="login-error-text"></span>
+          </div>
+
+          <!-- Botão de login -->
+          <button
+            type="submit"
+            id="btn-login"
+            class="btn btn-navy btn-full"
+            style="margin-top: var(--space-6); padding: 14px;"
+          >
+            Entrar
+          </button>
+
+        </form>
+
+        <!-- Rodapé -->
+        <div class="login-footer">
+          <p>
+            Problemas com o acesso? Contate a<br>
+            <strong>Secretaria Executiva do CMS-MOC</strong>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/login.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentos — CMS Montes Claros</title>
+  <meta name="description" content="Biblioteca digital de documentos do Conselho Municipal de Saúde de Montes Claros">
+  <meta name="theme-color" content="#0D2E5A">
+
+  <!-- PWA -->
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon"          type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="apple-touch-icon"               href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable"          content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title"            content="CMS Docs">
+
+  <!-- Microsoft -->
+  <meta name="msapplication-TileColor" content="#0D2E5A">
+  <meta name="msapplication-TileImage" content="https://i.ibb.co/ksxpJdVw/iconcms512.png">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ── Loading Screen ───────────────────────────────────── -->
+  <div id="loading-screen">
+    <img
+      src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png"
+      alt="CMS Montes Claros"
+      class="loading-logo"
+    >
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando Documentos</p>
+  </div>
+
+  <!-- ── Toast Container ──────────────────────────────────── -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- ── Banner Offline ───────────────────────────────────── -->
+  <div id="offline-banner" role="status" aria-live="polite">
+    <span>📶</span>
+    <span>Modo offline — exibindo documentos em cache</span>
+  </div>
+
+  <!-- ── Dashboard ────────────────────────────────────────── -->
+  <div id="dashboard-page" class="active">
+
+    <!-- NAVBAR ─────────────────────────────────────────────── -->
+    <nav id="navbar" role="navigation" aria-label="Navegação principal">
+
+      <!-- Marca -->
+      <div class="navbar-brand">
+        <img
+          src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png"
+          alt="CMS Montes Claros"
+          class="navbar-logo"
+        >
+        <div class="navbar-title">
+          Documentos<br>
+          <span>Conselho Municipal de Saúde</span>
+        </div>
+      </div>
+
+      <!-- Ações -->
+      <div class="navbar-actions">
+
+        <!-- Usuário logado -->
+        <div class="navbar-user" title="Usuário logado">
+          <div class="navbar-avatar" id="nav-avatar" aria-hidden="true">--</div>
+          <span class="navbar-name" id="nav-user-name"></span>
+        </div>
+
+        <div class="navbar-divider" aria-hidden="true"></div>
+
+        <!-- Atualizar -->
+        <button
+          id="btn-refresh"
+          class="navbar-btn"
+          title="Atualizar documentos"
+          aria-label="Atualizar lista de documentos"
+        >
+          <span class="navbar-btn-icon">↻</span>
+          <span class="sr-only">Atualizar</span>
+        </button>
+
+        <!-- Logout -->
+        <button
+          id="btn-logout"
+          class="navbar-btn"
+          title="Sair do sistema"
+          aria-label="Encerrar sessão"
+        >
+          <span class="navbar-btn-icon">⎋</span>
+          <span>Sair</span>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL ──────────────────────────────────── -->
+    <main class="dashboard-wrap" role="main">
+
+      <!-- Cabeçalho do painel -->
+      <div class="dashboard-header">
+        <p class="dashboard-welcome">
+          Bem-vindo, <strong id="welcome-name">Conselheiro</strong>
+        </p>
+        <h1 class="dashboard-title">
+          Biblioteca <em>Documental</em>
+        </h1>
+        <p class="dashboard-subtitle">
+          Documentos institucionais do Conselho Municipal de Saúde de Montes Claros
+        </p>
+      </div>
+
+      <!-- Barra de busca -->
+      <div
+        class="search-bar-wrap"
+        role="search"
+        aria-label="Buscar documentos"
+      >
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Buscar por título, descrição ou tipo de documento..."
+          aria-label="Campo de busca de documentos"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <span
+          class="search-clear hidden"
+          id="search-clear"
+          role="button"
+          tabindex="0"
+          title="Limpar busca"
+          aria-label="Limpar campo de busca"
+        >✕</span>
+      </div>
+
+      <!-- Barra de filtros -->
+      <div
+        class="filters-bar"
+        role="group"
+        aria-label="Filtros de documentos"
+      >
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-tipo">Tipo</label>
+          <select
+            id="filter-tipo"
+            class="filter-select"
+            aria-label="Filtrar por tipo de documento"
+          >
+            <option value="">Todos os tipos</option>
+          </select>
+        </div>
+
+        <div class="filters-divider" aria-hidden="true"></div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="filter-ano">Ano</label>
+          <select
+            id="filter-ano"
+            class="filter-select"
+            aria-label="Filtrar por ano"
+          >
+            <option value="">Todos os anos</option>
+          </select>
+        </div>
+
+        <button
+          id="clear-filters"
+          class="btn-clear-filters"
+          title="Limpar todos os filtros"
+          aria-label="Limpar todos os filtros ativos"
+        >
+          Limpar filtros
+        </button>
+
+        <div class="filters-count" id="docs-count" aria-live="polite" aria-atomic="true">
+          <!-- Preenchido via JS -->
+        </div>
+
+      </div>
+
+      <!-- Grid de documentos -->
+      <section
+        id="docs-grid"
+        aria-label="Lista de documentos"
+        aria-live="polite"
+      >
+        <!-- Preenchido via JS -->
+      </section>
+
+      <!-- Informação de rodapé -->
+      <div class="docs-info" id="docs-info">
+        <span>CMS Montes Claros</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>Secretaria Executiva</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>Sistema de Documentos v1.0</span>
+      </div>
+
+    </main>
+
+  </div><!-- /#dashboard-page -->
+
+  <!-- ── PWA Install Banner ──────────────────────────────── -->
+  <div
+    id="install-banner"
+    role="complementary"
+    aria-label="Instalar aplicativo"
+  >
+    <div class="install-banner-text">
+      <img
+        src="https://i.ibb.co/4g2ZZyGZ/iconcms1.png"
+        alt=""
+        class="install-banner-icon"
+        aria-hidden="true"
+      >
+      <div class="install-banner-info">
+        <h4>Instalar CMS Docs</h4>
+        <p>Acesse rapidamente pelo seu celular</p>
+      </div>
+    </div>
+    <div class="install-banner-actions">
+      <button
+        id="btn-install-dismiss"
+        class="btn btn-ghost btn-sm"
+        aria-label="Fechar banner de instalação"
+      >Agora não</button>
+      <button
+        id="btn-install"
+        class="btn btn-primary btn-sm"
+        aria-label="Instalar aplicativo"
+      >Instalar</button>
+    </div>
+  </div>
+
+  <!-- Scripts (ordem importa!) -->
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Inicializa nome de boas-vindas extra -->
+  <script>
+    // Preenche nome na saudação assim que a sessão é lida
+    (function() {
+      try {
+        const s = JSON.parse(localStorage.getItem('cms_session') || '{}');
+        if (s.nome) {
+          const el = document.getElementById('welcome-name');
+          if (el) el.textContent = s.nome.split(' ')[0];
+        }
+      } catch(e) {}
+    })();
+  </script>
+
+</body>
+</html>

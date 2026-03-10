@@ -1,0 +1,45 @@
+{
+  "name": "CMS Montes Claros — Documentos",
+  "short_name": "CMS Docs",
+  "description": "Biblioteca digital de documentos institucionais do Conselho Municipal de Saúde de Montes Claros",
+  "start_url": "/doc/index.html",
+  "scope": "/doc/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0D2E5A",
+  "theme_color": "#0D2E5A",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["government", "productivity"],
+  "icons": [
+    {
+      "src": "https://i.ibb.co/4g2ZZyGZ/iconcms1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://i.ibb.co/ksxpJdVw/iconcms512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Documentos",
+      "short_name": "Docs",
+      "description": "Ver todos os documentos",
+      "url": "/doc/index.html",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/4g2ZZyGZ/iconcms1.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
