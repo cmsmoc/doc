@@ -91,7 +91,7 @@ const UI = (() => {
       <div class="doc-card-footer">
         <span class="doc-card-date">${data}</span>
         <span class="doc-card-action">
-          Abrir PDF
+          Abrir Doc
           <span class="doc-card-action-icon">→</span>
         </span>
       </div>
