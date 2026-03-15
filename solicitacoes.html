@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitações — CMS</title>
+  <meta name="theme-color" content="#0D2E5A">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-content { max-width:760px; margin:0 auto; padding:var(--space-6); }
+    .page-header  { margin-bottom:var(--space-6); }
+    .page-title   { font-family:var(--font-display); font-size:var(--text-2xl); font-weight:900; color:var(--cms-navy); letter-spacing:-0.8px; }
+    .page-sub     { font-size:var(--text-sm); color:var(--cms-muted); margin-top:var(--space-2); }
+
+    /* FORM */
+    .form-card {
+      background:white; border:1.5px solid var(--cms-border);
+      border-radius:var(--radius-lg); padding:var(--space-6);
+      margin-bottom:var(--space-6);
+    }
+    .form-card-title {
+      font-family:var(--font-display); font-size:var(--text-lg);
+      font-weight:800; color:var(--cms-navy); margin-bottom:var(--space-5);
+    }
+
+    /* LISTA DE SOLICITAÇÕES */
+    .sol-card {
+      background:white; border:1.5px solid var(--cms-border);
+      border-radius:var(--radius-lg); padding:var(--space-5);
+      margin-bottom:var(--space-3);
+    }
+    .sol-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-3); margin-bottom:var(--space-3); }
+    .sol-titulo { font-weight:700; color:var(--cms-navy); font-size:var(--text-base); }
+    .sol-prot   { font-family:monospace; font-size:var(--text-xs); color:var(--cms-muted); }
+    .sol-desc   { font-size:var(--text-sm); color:var(--cms-muted); line-height:1.6; margin-bottom:var(--space-3); }
+    .sol-footer { display:flex; align-items:center; gap:var(--space-3); font-size:var(--text-xs); color:var(--cms-muted); }
+    .sol-resposta {
+      background:var(--cms-off); border-radius:var(--radius-md);
+      padding:var(--space-3) var(--space-4); margin-top:var(--space-3);
+      font-size:var(--text-sm); color:var(--cms-ink);
+      border-left:3px solid var(--cms-green);
+    }
+
+    .status-badge { }
+    .st-recebido  { background:#EFF6FF; color:#1B6CB5; }
+    .st-respondido{ background:#D1FAE5; color:#1E8A4A; }
+    .st-encerrado { background:#F3F4F6; color:var(--cms-muted); }
+  </style>
+</head>
+<body>
+  <div id="toast-container" aria-live="polite"></div>
+
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="navbar-logo">
+      <div class="navbar-title">Solicitações</div>
+    </div>
+    <div class="navbar-actions">
+      <button class="navbar-btn" onclick="window.location.href='home.html'">← Início</button>
+      <button class="navbar-btn" id="btn-logout">⎋ Sair</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1 class="page-title">Minhas Solicitações</h1>
+      <p class="page-sub">Envie solicitações oficiais à Diretoria Executiva e acompanhe o andamento.</p>
+    </div>
+
+    <!-- FORMULÁRIO -->
+    <div class="form-card">
+      <h2 class="form-card-title">Nova Solicitação</h2>
+
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <div class="select-wrapper">
+          <select id="sol-tipo" class="form-control">
+            <option value="Informação">Solicitação de Informação</option>
+            <option value="Documentos">Solicitação de Documentos</option>
+            <option value="Pauta">Inclusão em Pauta</option>
+            <option value="Declaração">Emissão de Declaração</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Assunto *</label>
+        <input type="text" id="sol-assunto" class="form-control" placeholder="Descreva brevemente o objeto da solicitação">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descrição detalhada *</label>
+        <textarea id="sol-desc" class="form-control" rows="4" placeholder="Detalhe sua solicitação..."></textarea>
+      </div>
+
+      <div id="sol-erro" class="form-error hidden"><span>⚠️</span><span id="sol-erro-txt"></span></div>
+
+      <button id="btn-enviar" class="btn btn-primary" onclick="enviarSol()">
+        Enviar Solicitação
+      </button>
+    </div>
+
+    <!-- LISTA -->
+    <h2 style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:800;color:var(--cms-navy);margin-bottom:var(--space-4)">
+      Histórico
+    </h2>
+    <div id="lista-sols">
+      <div class="empty-state">
+        <div class="empty-icon">📨</div>
+        <p class="empty-title">Carregando...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    Auth.requireAuth();
+    UI.init();
+    const session = Auth.getSession();
+    UI.setNavUser(session);
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (confirm('Sair?')) Auth.logout();
+    });
+
+    carregarSolicitacoes();
+
+    async function carregarSolicitacoes() {
+      const r = await Api.getSolicitacoes();
+      const lista = document.getElementById('lista-sols');
+      const sols  = r.success ? r.solicitacoes : [];
+
+      if (!sols.length) {
+        lista.innerHTML = `<div class="empty-state">
+          <div class="empty-icon">📨</div>
+          <p class="empty-title">Nenhuma solicitação ainda</p>
+          <p class="empty-desc">Use o formulário acima para enviar sua primeira solicitação.</p>
+        </div>`;
+        return;
+      }
+
+      lista.innerHTML = '';
+      [...sols].reverse().forEach(s => {
+        const stClass = { recebido:'st-recebido', respondido:'st-respondido', encerrado:'st-encerrado' }[s.status] || 'st-recebido';
+        const div = document.createElement('div');
+        div.className = 'sol-card';
+        div.innerHTML = `
+          <div class="sol-header">
+            <div>
+              <div class="sol-titulo">${s.assunto}</div>
+              <div class="sol-prot">Protocolo: ${s.protocolo}</div>
+            </div>
+            <span class="badge ${stClass}">${s.status}</span>
+          </div>
+          <div class="sol-desc">${s.descricao}</div>
+          ${s.resposta ? `<div class="sol-resposta"><strong>Resposta:</strong> ${s.resposta}</div>` : ''}
+          <div class="sol-footer">
+            <span>${s.tipo}</span>
+            <span>·</span>
+            <span>${s.data}</span>
+            ${s.data_resposta ? `<span>·</span><span>Respondido em ${s.data_resposta}</span>` : ''}
+          </div>`;
+        lista.appendChild(div);
+      });
+    }
+
+    async function enviarSol() {
+      const tipo    = document.getElementById('sol-tipo').value;
+      const assunto = document.getElementById('sol-assunto').value.trim();
+      const desc    = document.getElementById('sol-desc').value.trim();
+
+      if (!assunto) { mostrarErro('Informe o assunto.'); return; }
+      if (!desc)    { mostrarErro('Descreva a solicitação.'); return; }
+
+      const btn = document.getElementById('btn-enviar');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-spinner"></span> Enviando...';
+
+      const r = await Api.enviarSolicitacao(tipo, assunto, desc);
+      btn.disabled = false;
+      btn.textContent = 'Enviar Solicitação';
+
+      if (r.success) {
+        UI.toast(`Solicitação enviada! Protocolo: ${r.protocolo}`, 'success');
+        document.getElementById('sol-assunto').value = '';
+        document.getElementById('sol-desc').value    = '';
+        carregarSolicitacoes();
+      } else {
+        mostrarErro(r.message || 'Erro ao enviar.');
+      }
+    }
+
+    function mostrarErro(msg) {
+      const el = document.getElementById('sol-erro');
+      document.getElementById('sol-erro-txt').textContent = msg;
+      el.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
