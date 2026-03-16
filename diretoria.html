@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diretoria — CMS Montes Claros</title>
+  <meta name="theme-color" content="#0D2E5A">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ══════════════════════════════════════════════
+       TEMA PREMIUM — DIRETORIA
+       Azul profundo + dourado + detalhes refinados
+       ══════════════════════════════════════════════ */
+    :root {
+      --gold:       #C9A84C;
+      --gold-light: #F5E6B8;
+      --gold-dark:  #8B6914;
+      --dark-bg:    #0A1F3A;
+      --mid-bg:     #0D2E5A;
+      --card-bg:    #0F3460;
+    }
+
+    body { background: #0D1B2A; }
+
+    /* Loading especial */
+    #loading-screen { background: var(--dark-bg); }
+    #loading-screen .loading-spinner {
+      border-color: rgba(201,168,76,.2);
+      border-top-color: var(--gold);
+    }
+    #loading-screen .loading-text { color: rgba(201,168,76,.6); }
+
+    /* Navbar premium */
+    #navbar {
+      background: var(--dark-bg);
+      border-bottom: 1px solid rgba(201,168,76,.2);
+      box-shadow: 0 2px 20px rgba(0,0,0,.4);
+    }
+    .navbar-title span { color: var(--gold); }
+
+    /* Tag dourada do usuário */
+    .gold-user-tag {
+      display: flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.08));
+      border: 1px solid rgba(201,168,76,.35);
+      border-radius: var(--radius-full);
+      padding: 4px 12px 4px 6px;
+    }
+    .gold-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #E8C96A);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 11px; font-weight: 800;
+      color: var(--dark-bg); flex-shrink: 0;
+    }
+    .gold-name {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      color: var(--gold); max-width: 120px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .gold-role {
+      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: rgba(201,168,76,.6); font-family: var(--font-display);
+      font-weight: 600;
+    }
+
+    /* Hero premium */
+    .dir-hero {
+      background: linear-gradient(160deg, var(--dark-bg) 0%, #0D2E5A 60%, #143060 100%);
+      padding: var(--space-10) var(--space-6) var(--space-8);
+      position: relative; overflow: hidden;
+    }
+    .dir-hero::before {
+      content: '';
+      position: absolute; top: -100px; right: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,.08) 0%, transparent 65%);
+    }
+    .dir-hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,.4), transparent);
+    }
+    .dir-hero-inner {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; gap: var(--space-6);
+    }
+    .dir-hero-logo {
+      width: 72px; height: 72px; border-radius: var(--radius-lg);
+      border: 2px solid rgba(201,168,76,.4);
+      overflow: hidden; flex-shrink: 0;
+      background: rgba(201,168,76,.08);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dir-hero-logo img { width: 56px; height: 56px; object-fit: contain; }
+    .dir-hero-text {}
+    .dir-eyebrow {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dir-eyebrow::before {
+      content: ''; width: 20px; height: 1px; background: var(--gold);
+    }
+    .dir-title {
+      font-family: var(--font-display); font-size: clamp(24px,4vw,36px);
+      font-weight: 900; color: white; letter-spacing: -1px; line-height: 1.1;
+    }
+    .dir-title span { color: var(--gold); }
+    .dir-subtitle { margin-top: 8px; font-size: 14px; color: rgba(255,255,255,.45); }
+
+    /* Conteúdo sobre fundo escuro */
+    .page-wrap { max-width: 960px; margin: 0 auto; padding: var(--space-6); }
+
+    /* Section header dourado */
+    .gold-section {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: var(--space-4);
+    }
+    .gold-section-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(201,168,76,.4), transparent);
+    }
+    .gold-section-label {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold);
+    }
+
+    /* Cards premium escuros */
+    .premium-card {
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(201,168,76,.2);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-3);
+      transition: all var(--transition-base);
+      cursor: pointer; text-decoration: none; display: block; color: inherit;
+    }
+    .premium-card:hover {
+      border-color: rgba(201,168,76,.5);
+      background: linear-gradient(135deg, rgba(201,168,76,.08), rgba(255,255,255,.04));
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    }
+    .premium-card-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+      margin-bottom: var(--space-3);
+    }
+    .premium-card-title {
+      font-family: var(--font-display); font-size: var(--text-base); font-weight: 700;
+      color: rgba(255,255,255,.9); line-height: 1.3;
+    }
+    .premium-badge {
+      font-family: var(--font-display); font-size: 9px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      background: rgba(201,168,76,.15); color: var(--gold);
+      border: 1px solid rgba(201,168,76,.3);
+      padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .premium-card-desc {
+      font-size: var(--text-sm); color: rgba(255,255,255,.45); line-height: 1.6;
+      margin-bottom: var(--space-3);
+    }
+    .premium-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: var(--space-3);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .premium-card-date { font-size: 12px; color: rgba(255,255,255,.35); }
+    .premium-card-cta {
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: .5px; text-transform: uppercase;
+      color: var(--gold); display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Cards de solicitações */
+    .sol-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-lg); padding: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+    .sol-card-header { display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px; }
+    .sol-prot { font-family:monospace;font-size:11px;color:rgba(201,168,76,.6); }
+    .sol-nome { font-weight:700;color:rgba(255,255,255,.85);font-size:13px; }
+    .sol-assunto { font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:8px; }
+    .sol-footer { display:flex;align-items:center;gap:12px;font-size:11px;color:rgba(255,255,255,.3); }
+
+    .badge-sol-recebido { background:rgba(27,108,181,.3);color:#93C5FD;border:1px solid rgba(27,108,181,.4);border-radius:var(--radius-full);padding:2px 8px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase; }
+    .badge-sol-respondido { background:rgba(30,138,74,.3);color:#86EFAC;border:1px solid rgba(30,138,74,.4);border-radius:var(--radius-full);padding:2px 8px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase; }
+
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, var(--gold), #E8C96A);
+      color: var(--dark-bg); border: none; border-radius: var(--radius-md);
+      font-family: var(--font-display); font-size: 11px; font-weight: 800;
+      letter-spacing: .5px; text-transform: uppercase;
+      cursor: pointer; transition: all var(--transition-fast); text-decoration: none;
+    }
+    .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,168,76,.4); }
+    .btn-ghost-gold {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 16px;
+      background: transparent; color: var(--gold);
+      border: 1px solid rgba(201,168,76,.4); border-radius: var(--radius-md);
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: .5px; text-transform: uppercase;
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .btn-ghost-gold:hover { background: rgba(201,168,76,.1); }
+
+    /* Popup de aviso premium */
+    .popup-overlay {
+      position:fixed;inset:0;background:rgba(5,15,30,.85);
+      backdrop-filter:blur(8px);z-index:500;
+      display:flex;align-items:center;justify-content:center;padding:var(--space-6);
+    }
+    .popup-box {
+      background: linear-gradient(160deg, #0F2540, #0D2E5A);
+      border: 1px solid rgba(201,168,76,.4);
+      border-radius: var(--radius-xl); padding: var(--space-8);
+      max-width: 440px; width: 100%;
+      box-shadow: 0 24px 80px rgba(0,0,0,.6);
+    }
+    .popup-icon { font-size: 36px; margin-bottom: var(--space-4); }
+    .popup-eyebrow {
+      font-family:var(--font-display);font-size:10px;font-weight:700;
+      letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;
+    }
+    .popup-title {
+      font-family:var(--font-display);font-size:20px;font-weight:900;
+      color:white;margin-bottom:12px;
+    }
+    .popup-text { font-size:14px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:var(--space-6); }
+
+    /* Grid de navegação */
+    .nav-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap: var(--space-3); margin-bottom: var(--space-6);
+    }
+    .nav-item {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(201,168,76,.15);
+      border-radius: var(--radius-lg); padding: var(--space-4);
+      text-decoration: none; display: flex; align-items: center; gap: var(--space-3);
+      transition: all var(--transition-base);
+    }
+    .nav-item:hover {
+      border-color: rgba(201,168,76,.4);
+      background: rgba(201,168,76,.06);
+      transform: translateY(-2px);
+    }
+    .nav-icon { font-size: 22px; }
+    .nav-label {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      color: rgba(255,255,255,.8);
+    }
+    .nav-desc { font-size: 11px; color: rgba(255,255,255,.35); }
+
+    @media (max-width: 600px) {
+      .dir-hero-inner { flex-direction: column; align-items: flex-start; }
+      .nav-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading especial Diretoria -->
+  <div id="loading-screen" style="background:#0A1F3A">
+    <img src="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png" alt="Diretoria"
+      style="width:80px;margin-bottom:32px;border-radius:16px;border:2px solid rgba(201,168,76,.3)">
+    <div class="loading-spinner"></div>
+    <p class="loading-text" style="color:rgba(201,168,76,.5);letter-spacing:3px">DIRETORIA</p>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Popup de aviso (configurável no Painel Admin) -->
+  <div id="popup-dir" class="popup-overlay hidden">
+    <div class="popup-box">
+      <div class="popup-icon">📌</div>
+      <p class="popup-eyebrow">Aviso da Secretaria Executiva</p>
+      <h2 class="popup-title" id="popup-dir-titulo"></h2>
+      <p class="popup-text" id="popup-dir-texto"></p>
+      <button class="btn-gold" style="width:100%;justify-content:center" onclick="fecharPopup()">
+        Entendi ✓
+      </button>
+    </div>
+  </div>
+
+  <!-- Navbar premium -->
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png" alt="Diretoria"
+        style="height:32px;border-radius:8px;border:1px solid rgba(201,168,76,.3)">
+      <div class="navbar-title" style="color:rgba(255,255,255,.8)">
+        CMS <span>Diretoria</span>
+      </div>
+    </div>
+    <div class="navbar-actions">
+      <!-- Tag dourada do usuário -->
+      <div class="gold-user-tag" id="gold-user-tag">
+        <div class="gold-avatar" id="gold-avatar">--</div>
+        <div>
+          <div class="gold-name" id="gold-name"></div>
+          <div class="gold-role">Diretoria</div>
+        </div>
+      </div>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" onclick="window.location.href='home.html'">← Início</button>
+      <button class="navbar-btn" id="btn-logout">⎋</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="dir-hero">
+    <div class="dir-hero-inner">
+      <div class="dir-hero-logo">
+        <img src="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png" alt="Diretoria">
+      </div>
+      <div class="dir-hero-text">
+        <p class="dir-eyebrow">Área restrita</p>
+        <h1 class="dir-title">Painel da <span>Diretoria</span></h1>
+        <p class="dir-subtitle">Conselho Municipal de Saúde de Montes Claros</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo -->
+  <div class="page-wrap">
+
+    <!-- Atalhos de navegação -->
+    <div class="gold-section">
+      <span class="gold-section-label">Acesso rápido</span>
+      <div class="gold-section-line"></div>
+    </div>
+    <div class="nav-grid">
+      <a href="index.html" class="nav-item">
+        <span class="nav-icon">📄</span>
+        <div><div class="nav-label">Documentos</div><div class="nav-desc">Biblioteca geral</div></div>
+      </a>
+      <a href="atas.html" class="nav-item">
+        <span class="nav-icon">📋</span>
+        <div><div class="nav-label">Atas</div><div class="nav-desc">Reuniões oficiais</div></div>
+      </a>
+      <a href="reunioes.html" class="nav-item">
+        <span class="nav-icon">🗓️</span>
+        <div><div class="nav-label">Reuniões</div><div class="nav-desc">Convocações e eventos</div></div>
+      </a>
+      <a href="solicitacoes.html" class="nav-item">
+        <span class="nav-icon">📨</span>
+        <div><div class="nav-label">Solicitações</div><div class="nav-desc">Demandas recebidas</div></div>
+      </a>
+    </div>
+
+    <!-- Documentos restritos da Diretoria -->
+    <div class="gold-section" style="margin-top:var(--space-2)">
+      <span class="gold-section-label">Documentos da Diretoria</span>
+      <div class="gold-section-line"></div>
+    </div>
+    <div id="docs-dir-grid"></div>
+
+    <!-- Solicitações recentes -->
+    <div class="gold-section" style="margin-top:var(--space-6)">
+      <span class="gold-section-label">Solicitações recentes</span>
+      <div class="gold-section-line"></div>
+      <button class="btn-ghost-gold" style="font-size:10px;padding:4px 10px" onclick="window.location.href='solicitacoes.html'">Ver todas →</button>
+    </div>
+    <div id="sols-wrap"></div>
+
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/manutencao.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      Auth.requireAuth();
+      const session = Auth.getSession();
+
+      // Verifica perfil — só diretoria+ acessa
+      const HIERARQUIA = ['publico','diretoria','presidente','secretaria','admin'];
+      if (HIERARQUIA.indexOf(session.perfil) < HIERARQUIA.indexOf('diretoria')) {
+        window.location.href = 'home.html';
+        return;
+      }
+
+      // Tag dourada
+      const partes = session.nome.trim().split(' ').filter(Boolean);
+      const iniciais = (partes[0]?.[0]||'') + (partes[partes.length-1]?.[0]||'');
+      document.getElementById('gold-avatar').textContent = iniciais.toUpperCase();
+      document.getElementById('gold-name').textContent = partes[0];
+
+      const estado = await Manutencao.verificar('diretoria');
+      if (estado !== 'ativo') return;
+
+      document.getElementById('btn-logout').addEventListener('click', () => { if (confirm('Sair?')) Auth.logout(); });
+
+      // Carrega avisos para Diretoria — popup especial
+      const [docs, sols, avisos] = await Promise.all([
+        Api.getDocumentos(),
+        Api.getSolicitacoes(),
+        Api.getAvisos(),
+      ]);
+
+      // Documentos restritos da Diretoria
+      const docsDiretoria = docs.filter(d => d.acesso === 'diretoria' || d.acesso === 'presidente');
+      const grid = document.getElementById('docs-dir-grid');
+      if (!docsDiretoria.length) {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:13px;padding:var(--space-3) 0">Nenhum documento restrito publicado ainda.</p>';
+      } else {
+        docsDiretoria.forEach(d => {
+          const a = document.createElement('a');
+          a.href = d.link || '#';
+          if (d.link) { a.target='_blank'; a.rel='noopener'; }
+          a.className = 'premium-card';
+          a.innerHTML = `
+            <div class="premium-card-header">
+              <div class="premium-card-title">${d.titulo}</div>
+              <span class="premium-badge">${d.tipo || 'Documento'}</span>
+            </div>
+            ${d.descricao ? `<p class="premium-card-desc">${d.descricao}</p>` : ''}
+            <div class="premium-card-footer">
+              <span class="premium-card-date">${_fmt(d.data)}</span>
+              <span class="premium-card-cta">Abrir ${d.midia==='video'?'▶️':'📄'} →</span>
+            </div>`;
+          grid.appendChild(a);
+        });
+      }
+
+      // Solicitações recentes (últimas 5)
+      const wrap = document.getElementById('sols-wrap');
+      const recentes = sols.solicitacoes ? sols.solicitacoes.slice(0,5) : [];
+      if (!recentes.length) {
+        wrap.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:13px">Nenhuma solicitação recebida.</p>';
+      } else {
+        recentes.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'sol-card';
+          div.innerHTML = `
+            <div class="sol-card-header">
+              <div>
+                <div class="sol-nome">${s.nome}</div>
+                <div class="sol-prot">${s.protocolo}</div>
+              </div>
+              <span class="${s.status==='respondido'?'badge-sol-respondido':'badge-sol-recebido'}">${s.status}</span>
+            </div>
+            <div class="sol-assunto">${s.assunto}</div>
+            <div class="sol-footer">
+              <span>${s.tipo}</span>
+              <span>·</span>
+              <span>${s.data}</span>
+            </div>`;
+          wrap.appendChild(div);
+        });
+      }
+
+      // Popup de aviso para Diretoria
+      const avisoDir = avisos.avisos?.find(a => a.tipo === 'popup') || null;
+      if (avisoDir) {
+        document.getElementById('popup-dir-titulo').textContent = avisoDir.titulo;
+        document.getElementById('popup-dir-texto').textContent  = avisoDir.texto;
+        document.getElementById('popup-dir').classList.remove('hidden');
+      }
+
+      document.getElementById('loading-screen').classList.add('fade-out');
+      setTimeout(() => document.getElementById('loading-screen')?.remove(), 500);
+    });
+
+    function fecharPopup() {
+      document.getElementById('popup-dir').classList.add('hidden');
+    }
+
+    function _fmt(d) {
+      if (!d) return '—';
+      try { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR'); } catch { return d; }
+    }
+  </script>
+</body>
+</html>

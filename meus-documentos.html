@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Documentos — CMS Montes Claros</title>
+  <meta name="theme-color" content="#0D2E5A">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      --mod-primary: #0E7490;
+      --mod-light:   #CFFAFE;
+      --mod-dark:    #0c4a6e;
+      --mod-accent:  #F5C400;
+    }
+    #navbar { background: var(--mod-dark); }
+    #navbar .navbar-title span { color: var(--mod-accent); }
+    .mod-hero {
+      background: linear-gradient(135deg, var(--mod-dark) 0%, var(--mod-primary) 100%);
+      padding: var(--space-8) var(--space-6) var(--space-6);
+    }
+    .mod-hero-inner { max-width: 760px; margin: 0 auto; }
+    .mod-eyebrow{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mod-accent);margin-bottom:var(--space-2);}
+    .mod-title{font-family:var(--font-display);font-size:clamp(22px,4vw,32px);font-weight:900;color:white;letter-spacing:-1px;}
+    .mod-title em{color:var(--mod-accent);font-style:normal;}
+    .mod-subtitle{font-size:var(--text-sm);color:rgba(255,255,255,.6);margin-top:var(--space-2);}
+
+    /* Card de identidade do conselheiro */
+    .identity-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-xl); padding: var(--space-6);
+      margin-bottom: var(--space-6);
+      display: flex; align-items: center; gap: var(--space-5);
+      box-shadow: var(--shadow-sm);
+    }
+    .identity-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--mod-light);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 22px; font-weight: 900;
+      color: var(--mod-primary); flex-shrink: 0;
+      border: 3px solid var(--mod-primary);
+    }
+    .identity-info h2 {
+      font-family: var(--font-display); font-size: var(--text-xl); font-weight: 900;
+      color: var(--mod-dark); margin-bottom: 4px;
+    }
+    .identity-info p { font-size: var(--text-sm); color: var(--cms-muted); }
+    .identity-badge {
+      margin-left: auto;
+      background: var(--mod-light); color: var(--mod-primary);
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 12px; border-radius: var(--radius-full);
+    }
+
+    .page-wrap { max-width: 760px; margin: 0 auto; padding: var(--space-6); }
+
+    .doc-list { display: flex; flex-direction: column; gap: var(--space-3); }
+    .meu-doc-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5);
+      display: flex; align-items: center; gap: var(--space-4);
+      text-decoration: none; color: inherit;
+      transition: all var(--transition-base);
+    }
+    .meu-doc-card:hover {
+      border-color: var(--mod-primary); box-shadow: var(--shadow-md);
+      transform: translateX(3px);
+    }
+    .meu-doc-icon {
+      width: 40px; height: 40px; border-radius: var(--radius-md);
+      background: var(--mod-light); display: flex; align-items: center;
+      justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .meu-doc-info { flex: 1; min-width: 0; }
+    .meu-doc-titulo {
+      font-family: var(--font-display); font-size: var(--text-base); font-weight: 700;
+      color: var(--mod-dark); margin-bottom: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .meu-doc-meta { font-size: var(--text-xs); color: var(--cms-muted); }
+    .meu-doc-arrow {
+      font-size: 14px; color: var(--mod-primary);
+      transition: transform var(--transition-fast);
+    }
+    .meu-doc-card:hover .meu-doc-arrow { transform: translateX(4px); }
+
+    .section-label {
+      font-family:var(--font-display);font-size:10px;font-weight:700;
+      letter-spacing:2px;text-transform:uppercase;color:var(--mod-primary);
+      margin-bottom:var(--space-3);display:flex;align-items:center;gap:var(--space-2);
+    }
+    .section-label::after{content:'';flex:1;height:1px;background:var(--cms-border);}
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="loading-logo">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando</p>
+  </div>
+  <div id="toast-container" aria-live="polite"></div>
+
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="navbar-logo">
+      <div class="navbar-title">Meus <span>Documentos</span></div>
+    </div>
+    <div class="navbar-actions">
+      <div class="navbar-avatar" id="nav-avatar">--</div>
+      <span class="navbar-name" id="nav-user-name"></span>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" onclick="window.location.href='home.html'">← Início</button>
+      <button class="navbar-btn" id="btn-logout">⎋</button>
+    </div>
+  </nav>
+
+  <div class="mod-hero">
+    <div class="mod-hero-inner">
+      <p class="mod-eyebrow">Área pessoal</p>
+      <h1 class="mod-title">Meus <em>Documentos</em></h1>
+      <p class="mod-subtitle">Declarações, termos e documentos vinculados ao seu mandato</p>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div id="identity-wrap"></div>
+    <p class="section-label">📁 Documentos do seu mandato</p>
+    <div id="docs-list"></div>
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/manutencao.js"></script>
+  <script>
+    const TIPO_ICON = { pdf:'📄', video:'▶️', link:'🔗', imagem:'🖼️' };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      Auth.requireAuth();
+      UI.init();
+      const session = Auth.getSession();
+      UI.setNavUser(session);
+      const estado = await Manutencao.verificar('meusdocs');
+      if (estado !== 'ativo') return;
+      document.getElementById('btn-logout').addEventListener('click', () => { if (confirm('Sair?')) Auth.logout(); });
+
+      // Card de identidade
+      const iniciais = session.nome.trim().split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+      document.getElementById('identity-wrap').innerHTML = `
+        <div class="identity-card">
+          <div class="identity-avatar">${iniciais}</div>
+          <div class="identity-info">
+            <h2>${session.nome}</h2>
+            <p>${session.entidade || session.segmento || 'Conselheiro(a) Municipal de Saúde'}</p>
+          </div>
+          <span class="identity-badge">${session.cadeira || session.perfil || 'Conselheiro'}</span>
+        </div>`;
+
+      const docs = await Api.getMeusDocs();
+      const lista = document.getElementById('docs-list');
+
+      if (!docs.length) {
+        lista.innerHTML = '<div class="empty-state"><div class="empty-icon">📁</div><p class="empty-title">Nenhum documento vinculado</p><p class="empty-desc">Seus documentos individuais aparecerão aqui quando forem publicados pela Secretaria Executiva.</p></div>';
+      } else {
+        docs.forEach(d => {
+          const a = document.createElement('a');
+          a.className = 'meu-doc-card';
+          a.href = d.link || '#';
+          if (d.link) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+          a.innerHTML = `
+            <div class="meu-doc-icon">${TIPO_ICON[d.midia] || '📄'}</div>
+            <div class="meu-doc-info">
+              <div class="meu-doc-titulo">${d.titulo}</div>
+              <div class="meu-doc-meta">${d.tipo || 'Documento'} · ${d.ano || ''}</div>
+            </div>
+            <span class="meu-doc-arrow">→</span>`;
+          lista.appendChild(a);
+        });
+      }
+
+      UI.hideLoadingScreen();
+    });
+  </script>
+</body>
+</html>

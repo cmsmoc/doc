@@ -1,0 +1,11 @@
+// Adicione estas duas linhas no switch do doGet, antes do "default:":
+//
+//   case 'getModulosStatus': result = getModulosStatus(); break;
+//   case 'setModuloStatus':  result = setModuloStatus(params); break;
+//
+// Ficará assim no final do switch:
+//
+//   case 'getComissoes':      result=handleGetComissoes();    break;
+//   case 'getModulosStatus':  result=getModulosStatus();      break;  ← NOVA
+//   case 'setModuloStatus':   result=setModuloStatus(params); break;  ← NOVA
+//   default:                  result=_err('Ação inválida: '+action);

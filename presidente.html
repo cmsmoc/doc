@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presidência — CMS Montes Claros</title>
+  <meta name="theme-color" content="#0A1F3A">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      --gold: #C9A84C; --gold-light: #F5E6B8; --gold-dark: #8B6914;
+      --dark-bg: #0A1F3A; --mid-bg: #0D2E5A;
+    }
+    body { background: #0D1B2A; }
+    #loading-screen { background: var(--dark-bg); }
+    #navbar { background: var(--dark-bg); border-bottom: 1px solid rgba(201,168,76,.2); }
+    .navbar-title span { color: var(--gold); }
+
+    .gold-user-tag {
+      display:flex;align-items:center;gap:8px;
+      background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.08));
+      border:1px solid rgba(201,168,76,.35);border-radius:var(--radius-full);
+      padding:4px 12px 4px 6px;
+    }
+    .gold-avatar {
+      width:28px;height:28px;border-radius:50%;
+      background:linear-gradient(135deg,var(--gold),#E8C96A);
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--font-display);font-size:11px;font-weight:800;
+      color:var(--dark-bg);flex-shrink:0;
+    }
+    .gold-name { font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--gold); }
+    .gold-role { font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(201,168,76,.6);font-family:var(--font-display);font-weight:600; }
+
+    .pres-hero {
+      background: linear-gradient(160deg, var(--dark-bg) 0%, #0D2E5A 70%);
+      padding: var(--space-10) var(--space-6) var(--space-8);
+      position: relative; overflow: hidden;
+    }
+    .pres-hero::before {
+      content:'';position:absolute;top:-80px;right:-80px;
+      width:400px;height:400px;border-radius:50%;
+      background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 65%);
+    }
+    .pres-hero::after {
+      content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent);
+    }
+    .pres-hero-inner { position:relative;z-index:1;max-width:960px;margin:0 auto; }
+    .pres-eyebrow { font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px; }
+    .pres-title { font-family:var(--font-display);font-size:clamp(24px,4vw,38px);font-weight:900;color:white;letter-spacing:-1.5px; }
+    .pres-title span { color:var(--gold); }
+    .pres-sub { font-size:14px;color:rgba(255,255,255,.4);margin-top:8px; }
+
+    .page-wrap { max-width:960px;margin:0 auto;padding:var(--space-6); }
+
+    /* Stats cards */
+    .stats-row { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:var(--space-6); }
+    .stat-card {
+      background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid rgba(201,168,76,.15);border-radius:var(--radius-lg);
+      padding:var(--space-4) var(--space-5);
+    }
+    .stat-card-n { font-family:var(--font-display);font-size:32px;font-weight:900;color:white; }
+    .stat-card-n.gold { color:var(--gold); }
+    .stat-card-l { font-size:11px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-top:4px; }
+
+    /* Pendências */
+    .pend-card {
+      background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);
+      border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);
+      margin-bottom:var(--space-3);display:flex;align-items:center;
+      justify-content:space-between;gap:12px;
+    }
+    .pend-card.urgente { border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.05); }
+    .pend-info {}
+    .pend-titulo { font-family:var(--font-display);font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:4px; }
+    .pend-meta { font-size:12px;color:rgba(255,255,255,.35); }
+
+    .btn-gold {
+      display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+      background:linear-gradient(135deg,var(--gold),#E8C96A);color:var(--dark-bg);
+      border:none;border-radius:var(--radius-md);
+      font-family:var(--font-display);font-size:11px;font-weight:800;
+      letter-spacing:.5px;text-transform:uppercase;cursor:pointer;
+      text-decoration:none;transition:all var(--transition-fast);
+    }
+    .btn-gold:hover { transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.4); }
+    .btn-ghost-gold {
+      display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
+      background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.4);
+      border-radius:var(--radius-md);font-family:var(--font-display);
+      font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+      cursor:pointer;transition:all var(--transition-fast);
+    }
+    .btn-ghost-gold:hover { background:rgba(201,168,76,.1); }
+
+    /* Gold section divider */
+    .gold-section { display:flex;align-items:center;gap:12px;margin-bottom:var(--space-4); }
+    .gold-section-line { flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.4),transparent); }
+    .gold-section-label { font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold); }
+  </style>
+</head>
+<body>
+  <div id="loading-screen" style="background:#0A1F3A">
+    <img src="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png" alt="Presidência"
+      style="width:80px;margin-bottom:32px;border-radius:16px;border:2px solid rgba(201,168,76,.3)">
+    <div class="loading-spinner" style="border-color:rgba(201,168,76,.2);border-top-color:#C9A84C"></div>
+    <p class="loading-text" style="color:rgba(201,168,76,.5);letter-spacing:3px">PRESIDÊNCIA</p>
+  </div>
+  <div id="toast-container"></div>
+
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/Ps3k9K1y/zap-diretoria-5.png" alt=""
+        style="height:30px;border-radius:6px;border:1px solid rgba(201,168,76,.3)">
+      <div class="navbar-title" style="color:rgba(255,255,255,.8)">CMS <span>Presidência</span></div>
+    </div>
+    <div class="navbar-actions">
+      <div class="gold-user-tag">
+        <div class="gold-avatar" id="gold-avatar">--</div>
+        <div><div class="gold-name" id="gold-name"></div><div class="gold-role">Presidente</div></div>
+      </div>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" onclick="window.location.href='diretoria.html'">← Diretoria</button>
+      <button class="navbar-btn" id="btn-logout">⎋</button>
+    </div>
+  </nav>
+
+  <div class="pres-hero">
+    <div class="pres-hero-inner">
+      <p class="pres-eyebrow">Painel executivo</p>
+      <h1 class="pres-title">Painel do <span>Presidente</span></h1>
+      <p class="pres-sub">Pendências, deliberações e visão executiva do Conselho</p>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-card-n gold" id="st-pend">—</div><div class="stat-card-l">Solicitações pendentes</div></div>
+      <div class="stat-card"><div class="stat-card-n" id="st-atas">—</div><div class="stat-card-l">Atas aguardando aprovação</div></div>
+      <div class="stat-card"><div class="stat-card-n" id="st-docs">—</div><div class="stat-card-l">Documentos publicados</div></div>
+    </div>
+
+    <div class="gold-section">
+      <span class="gold-section-label">Solicitações aguardando resposta</span>
+      <div class="gold-section-line"></div>
+      <a href="solicitacoes.html" class="btn-ghost-gold" style="font-size:10px;padding:4px 10px">Ver todas →</a>
+    </div>
+    <div id="pend-sols-wrap"></div>
+
+    <div class="gold-section" style="margin-top:var(--space-6)">
+      <span class="gold-section-label">Atas pendentes de aprovação geral</span>
+      <div class="gold-section-line"></div>
+    </div>
+    <div id="pend-atas-wrap"></div>
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/manutencao.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      Auth.requireAuth();
+      const session = Auth.getSession();
+      const H = ['publico','diretoria','presidente','secretaria','admin'];
+      if (H.indexOf(session.perfil) < H.indexOf('presidente')) {
+        window.location.href = 'home.html'; return;
+      }
+
+      const partes = session.nome.trim().split(' ').filter(Boolean);
+      document.getElementById('gold-avatar').textContent = ((partes[0]?.[0]||'')+(partes[partes.length-1]?.[0]||'')).toUpperCase();
+      document.getElementById('gold-name').textContent = partes[0];
+
+      const estado = await Manutencao.verificar('presidente');
+      if (estado !== 'ativo') return;
+
+      document.getElementById('btn-logout').addEventListener('click', () => { if (confirm('Sair?')) Auth.logout(); });
+
+      const [sols, atas, docs] = await Promise.all([
+        Api.getSolicitacoes(),
+        Api.getAtasPendentes(),
+        Api.getDocumentos(),
+      ]);
+
+      const pendentes = sols.solicitacoes?.filter(s => s.status === 'recebido') || [];
+      const atasP = atas || [];
+      document.getElementById('st-pend').textContent = pendentes.length;
+      document.getElementById('st-atas').textContent = atasP.length;
+      document.getElementById('st-docs').textContent = docs.length;
+
+      // Solicitações pendentes
+      const wSols = document.getElementById('pend-sols-wrap');
+      if (!pendentes.length) {
+        wSols.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:13px;padding:8px 0">Nenhuma solicitação pendente.</p>';
+      } else {
+        pendentes.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'pend-card';
+          div.innerHTML = `
+            <div class="pend-info">
+              <div class="pend-titulo">${s.assunto}</div>
+              <div class="pend-meta">${s.nome} · ${s.tipo} · ${s.data}</div>
+            </div>
+            <a href="solicitacoes.html" class="btn-ghost-gold" style="font-size:10px;padding:5px 12px">Responder →</a>`;
+          wSols.appendChild(div);
+        });
+      }
+
+      // Atas pendentes
+      const wAtas = document.getElementById('pend-atas-wrap');
+      if (!atasP.length) {
+        wAtas.innerHTML = '<p style="color:rgba(255,255,255,.3);font-size:13px;padding:8px 0">Nenhuma ata aguardando aprovação.</p>';
+      } else {
+        atasP.forEach(a => {
+          const div = document.createElement('div');
+          div.className = 'pend-card';
+          div.innerHTML = `
+            <div class="pend-info">
+              <div class="pend-titulo">${a.numero} — ${a.tipo}</div>
+              <div class="pend-meta">${_fmt(a.data)}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              ${a.link_pdf?`<a href="${a.link_pdf}" target="_blank" class="btn-ghost-gold" style="font-size:10px;padding:5px 12px">Ver PDF</a>`:''}
+              <button class="btn-gold" style="font-size:10px;padding:5px 12px" onclick="aprovar('${a.id}',this)">Aprovar ✓</button>
+            </div>`;
+          wAtas.appendChild(div);
+        });
+      }
+
+      document.getElementById('loading-screen').classList.add('fade-out');
+      setTimeout(() => document.getElementById('loading-screen')?.remove(), 500);
+    });
+
+    async function aprovar(id, btn) {
+      btn.disabled = true; btn.textContent = '...';
+      const r = await Api.aprovarAta(id);
+      if (r.success) { btn.textContent = '✅'; }
+      else { btn.disabled = false; btn.textContent = 'Aprovar ✓'; alert(r.message); }
+    }
+
+    function _fmt(d) {
+      if (!d) return '—';
+      try { return new Date(d+'T12:00:00').toLocaleDateString('pt-BR'); } catch { return d; }
+    }
+  </script>
+</body>
+</html>

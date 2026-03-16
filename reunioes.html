@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reuniões — CMS Montes Claros</title>
+  <meta name="theme-color" content="#1B6CB5">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root {
+      --mod-primary: #1B6CB5;
+      --mod-light:   #DBEAFE;
+      --mod-dark:    #1e3a5f;
+      --mod-accent:  #F5C400;
+    }
+    #navbar { background: var(--mod-dark); }
+    #navbar .navbar-title span { color: var(--mod-accent); }
+    .mod-hero {
+      background: linear-gradient(135deg, var(--mod-dark) 0%, #1B6CB5 100%);
+      padding: var(--space-8) var(--space-6) var(--space-6);
+    }
+    .mod-hero-inner { max-width: 760px; margin: 0 auto; }
+    .mod-eyebrow { font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mod-accent);margin-bottom:var(--space-2); }
+    .mod-title { font-family:var(--font-display);font-size:clamp(22px,4vw,32px);font-weight:900;color:white;letter-spacing:-1px; }
+    .mod-title em { color:var(--mod-accent);font-style:normal; }
+    .mod-subtitle { font-size:var(--text-sm);color:rgba(255,255,255,.6);margin-top:var(--space-2); }
+
+    .page-wrap { max-width: 900px; margin: 0 auto; padding: var(--space-6); }
+
+    /* Timeline de reuniões */
+    .timeline { position: relative; }
+    .timeline::before {
+      content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+      width: 2px; background: var(--mod-light);
+    }
+
+    .reuniao-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      margin-bottom: var(--space-4); margin-left: 52px;
+      position: relative; transition: all var(--transition-base);
+    }
+    .reuniao-card::before {
+      content: ''; position: absolute;
+      left: -40px; top: 18px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--mod-primary); border: 3px solid white;
+      box-shadow: 0 0 0 3px var(--mod-light);
+    }
+    .reuniao-card.futura::before { background: var(--mod-accent); }
+    .reuniao-card:hover { box-shadow: var(--shadow-md); transform: translateX(3px); }
+
+    .reuniao-header { display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3); }
+    .reuniao-titulo { font-family:var(--font-display);font-size:var(--text-base);font-weight:800;color:var(--mod-dark); }
+    .reuniao-tipo-badge {
+      font-family:var(--font-display);font-size:10px;font-weight:700;
+      letter-spacing:.8px;text-transform:uppercase;
+      background:var(--mod-light);color:var(--mod-primary);
+      padding:3px 10px;border-radius:var(--radius-full);white-space:nowrap;
+    }
+    .reuniao-tipo-badge.futura { background:#FEF9C3;color:#92400E; }
+    .reuniao-meta { display:flex;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-2); }
+    .reuniao-meta-item { display:flex;align-items:center;gap:6px;font-size:var(--text-sm);color:var(--cms-muted); }
+    .reuniao-desc { font-size:var(--text-sm);color:var(--cms-muted);line-height:1.6; }
+
+    .month-label {
+      font-family:var(--font-display);font-size:11px;font-weight:700;
+      letter-spacing:2px;text-transform:uppercase;color:var(--mod-primary);
+      margin:var(--space-6) 0 var(--space-3);
+      padding-left:52px;
+    }
+
+    .filters-wrap {
+      display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-5);
+      background:white;border:1.5px solid var(--cms-border);
+      border-radius:var(--radius-lg);padding:var(--space-4);
+    }
+    .filter-select {
+      padding:var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+      border:1.5px solid var(--cms-border);border-radius:var(--radius-md);
+      font-size:var(--text-sm);background:white;color:var(--cms-ink);appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 10px center;
+    }
+    .filter-select:focus{outline:none;border-color:var(--mod-primary);}
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="loading-logo">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando Reuniões</p>
+  </div>
+  <div id="toast-container" aria-live="polite"></div>
+
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="navbar-logo">
+      <div class="navbar-title">Reuniões <span>e Eventos</span></div>
+    </div>
+    <div class="navbar-actions">
+      <div class="navbar-avatar" id="nav-avatar">--</div>
+      <span class="navbar-name" id="nav-user-name"></span>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" onclick="window.location.href='home.html'">← Início</button>
+      <button class="navbar-btn" id="btn-logout">⎋</button>
+    </div>
+  </nav>
+
+  <div class="mod-hero">
+    <div class="mod-hero-inner">
+      <p class="mod-eyebrow">Conselho Municipal de Saúde</p>
+      <h1 class="mod-title">Reuniões e <em>Convocações</em></h1>
+      <p class="mod-subtitle">Plenárias, reuniões de Diretoria e eventos institucionais</p>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="filters-wrap">
+      <select id="filtro-tipo" class="filter-select" onchange="aplicarFiltros()">
+        <option value="">Todos os tipos</option>
+        <option value="Plenária">Plenária</option>
+        <option value="Diretoria">Diretoria</option>
+        <option value="Extraordinária">Extraordinária</option>
+        <option value="Comissão">Comissão</option>
+      </select>
+      <select id="filtro-ano" class="filter-select" onchange="aplicarFiltros()">
+        <option value="">Todos os anos</option>
+      </select>
+      <span id="reunioes-count" style="margin-left:auto;font-size:var(--text-sm);color:var(--cms-muted)"></span>
+    </div>
+    <div id="reunioes-timeline"></div>
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/manutencao.js"></script>
+  <script>
+    let _todas = [];
+    const hoje = new Date();
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      Auth.requireAuth();
+      UI.init();
+      UI.setNavUser(Auth.getSession());
+      const estado = await Manutencao.verificar('reunioes');
+      if (estado !== 'ativo') return;
+      document.getElementById('btn-logout').addEventListener('click', () => { if (confirm('Sair?')) Auth.logout(); });
+      await carregar();
+      UI.hideLoadingScreen();
+    });
+
+    async function carregar() {
+      _todas = await Api.getReunioes();
+      const anos = [...new Set(_todas.map(r => r.data?.substring(0,4)).filter(Boolean))].sort((a,b)=>b-a);
+      const sel = document.getElementById('filtro-ano');
+      anos.forEach(a => { const o = document.createElement('option'); o.value=a; o.textContent=a; sel.appendChild(o); });
+      renderReunioes(_todas);
+    }
+
+    function aplicarFiltros() {
+      const tipo = document.getElementById('filtro-tipo').value;
+      const ano  = document.getElementById('filtro-ano').value;
+      renderReunioes(_todas.filter(r => (!tipo||r.tipo===tipo) && (!ano||r.data?.startsWith(ano))));
+    }
+
+    function renderReunioes(list) {
+      const tl = document.getElementById('reunioes-timeline');
+      document.getElementById('reunioes-count').textContent = list.length + ' reuniõe' + (list.length!==1?'s':'o');
+      if (!list.length) { tl.innerHTML='<div class="empty-state"><div class="empty-icon">🗓️</div><p class="empty-title">Nenhuma reunião encontrada</p></div>'; return; }
+      tl.innerHTML = '';
+      let mesAtual = '';
+      list.forEach(r => {
+        const data = r.data ? new Date(r.data + 'T12:00:00') : null;
+        const isFutura = data && data >= hoje;
+        const mes = data ? data.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}) : 'Data não informada';
+        if (mes !== mesAtual) {
+          mesAtual = mes;
+          const ml = document.createElement('div');
+          ml.className = 'month-label';
+          ml.textContent = mes.charAt(0).toUpperCase() + mes.slice(1);
+          tl.appendChild(ml);
+        }
+        const div = document.createElement('div');
+        div.className = 'reuniao-card' + (isFutura ? ' futura' : '');
+        div.innerHTML = `
+          <div class="reuniao-header">
+            <div class="reuniao-titulo">${r.titulo || 'Reunião'}</div>
+            <span class="reuniao-tipo-badge ${isFutura?'futura':''}">${r.tipo||'Reunião'}</span>
+          </div>
+          <div class="reuniao-meta">
+            ${r.data ? `<span class="reuniao-meta-item">📅 ${new Date(r.data+'T12:00:00').toLocaleDateString('pt-BR')}</span>` : ''}
+            ${r.hora ? `<span class="reuniao-meta-item">🕐 ${r.hora}</span>` : ''}
+            ${r.local ? `<span class="reuniao-meta-item">📍 ${r.local}</span>` : ''}
+          </div>
+          ${r.descricao ? `<p class="reuniao-desc">${r.descricao}</p>` : ''}`;
+        tl.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin — CMS-MOC</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0D2E5A;--blue:#1B6CB5;--green:#1E8A4A;--yellow:#F5C400;--red:#DC2626;--off:#F7F8FA;--ink:#111827;--muted:#6B7280;--border:#E5E7EB;--white:#FFFFFF;--lb:#DBEAFE;--lg:#D1FAE5;--ly:#FEF9C3;--lr:#FEE2E2;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Open Sans',sans-serif;font-size:13px;background:var(--off);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.hdr{background:var(--navy);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:30px;height:30px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.hdr-title{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:white}
+.hdr-title span{color:var(--yellow)}
+.hdr-badge{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);background:rgba(245,196,0,.15);border:1px solid rgba(245,196,0,.3);border-radius:20px;padding:3px 10px}
+.tabs{display:flex;background:white;border-bottom:2px solid var(--border);flex-shrink:0;overflow-x:auto}
+.tab{padding:10px 16px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--navy)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.content{flex:1;overflow-y:auto;padding:16px 20px}
+.panel{display:none}
+.panel.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue)}
+.stat.green::before{background:var(--green)}.stat.yellow::before{background:var(--yellow)}.stat.navy::before{background:var(--navy)}
+.stat-n{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:var(--navy);line-height:1}
+.stat-l{font-size:11px;font-weight:600;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.stat-s{font-size:11px;color:var(--muted);margin-top:1px}
+.quota-wrap{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.quota-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--navy);white-space:nowrap}
+.quota-bar-bg{flex:1;height:8px;background:var(--off);border-radius:20px;overflow:hidden}
+.quota-bar-fill{height:100%;border-radius:20px;background:var(--blue);transition:width .5s ease}
+.quota-bar-fill.warn{background:var(--yellow)}.quota-bar-fill.danger{background:var(--red)}
+.quota-pct{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--off);border-bottom:1px solid var(--border)}
+.sec-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue)}
+.tbl-wrap{background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.tbl-toolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--off);gap:10px}
+.tbl-search{border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;width:180px;color:var(--ink);font-family:'Open Sans',sans-serif}
+.tbl-search:focus{outline:none;border-color:var(--blue)}
+table{width:100%;border-collapse:collapse}
+th{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:7px 12px;text-align:left;background:var(--off);border-bottom:1px solid var(--border)}
+td{padding:7px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--ink)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F8FAFF}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.b-ativo{background:var(--lg);color:#065F46}.b-inativo{background:var(--lr);color:#991B1B}.b-arquivado{background:#F3F4F6;color:var(--muted)}
+.b-publico{background:var(--lb);color:#1E40AF}.b-diretoria{background:var(--ly);color:#92400E}.b-secretaria{background:#EDE9FE;color:#5B21B6}.b-presidente{background:#FEF2F2;color:#991B1B}.b-admin{background:var(--navy);color:white}
+.b-recebido{background:var(--lb);color:#1E40AF}.b-respondido{background:var(--lg);color:#065F46}.b-encerrado{background:#F3F4F6;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--blue);color:white}.btn-primary:hover{background:#1558A0}
+.btn-green{background:var(--green);color:white}.btn-navy{background:var(--navy);color:white}
+.btn-ghost{background:white;color:var(--muted);border:1px solid var(--border)}.btn-ghost:hover{background:var(--off)}
+.btn-sm{padding:4px 10px;font-size:10px}.btn:disabled{opacity:.5;cursor:not-allowed}
+.form-row{display:grid;gap:10px;margin-bottom:12px}.form-row.cols2{grid-template-columns:1fr 1fr}.form-row.cols3{grid-template-columns:1fr 1fr 1fr}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy)}
+.form-ctrl{padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;font-family:'Open Sans',sans-serif;color:var(--ink);background:white;transition:border-color .15s}
+.form-ctrl:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(27,108,181,.1)}
+textarea.form-ctrl{resize:vertical;min-height:70px}
+.form-card{background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.form-card-body{padding:14px 16px}
+.form-footer{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid var(--border);background:var(--off)}
+.msg{padding:8px 12px;border-radius:6px;font-size:12px;margin-top:8px;display:none}
+.msg.ok{background:var(--lg);color:#065F46;display:block}.msg.err{background:var(--lr);color:#991B1B;display:block}
+.spinner{width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.state-msg{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-list{display:flex;flex-direction:column;gap:6px;padding:14px 16px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{width:130px;font-size:11px;font-weight:600;color:var(--navy);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-bg{flex:1;background:var(--off);border-radius:20px;height:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:20px;background:var(--blue)}
+.bar-count{font-size:11px;color:var(--muted);width:24px;text-align:right;flex-shrink:0}
+.recent-list{display:flex;flex-direction:column;gap:6px}
+.recent-item{background:white;border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.recent-titulo{font-weight:600;color:var(--navy);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-meta{font-size:11px;color:var(--muted);white-space:nowrap}
+.log-item{display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.log-item:last-child{border-bottom:none}
+.log-ts{font-size:11px;color:var(--muted);white-space:nowrap;width:120px;flex-shrink:0}
+.log-nome{font-weight:600;color:var(--navy);font-size:12px;width:140px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log-acao{font-size:11px;color:var(--ink)}
+.log-wrap{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 16px;max-height:320px;overflow-y:auto}
+
+/* ── MÓDULOS GRID ── */
+.modules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.module-item{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.module-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.module-info{display:flex;align-items:center;gap:8px}
+.module-icon{font-size:18px}
+.module-name{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--navy)}
+.module-status-badge{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:10px}
+.ms-ativo{background:var(--lg);color:#065F46}
+.ms-manutencao{background:var(--ly);color:#92400E}
+.ms-inativo{background:#F3F4F6;color:var(--muted)}
+.module-controls{display:flex;gap:6px;margin-top:8px}
+.module-msg-input{width:100%;margin-top:6px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--ink);display:none}
+.module-msg-input.visible{display:block}
+
+/* CONFIG ROWS */
+.config-row{background:white;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.config-key{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--navy);width:180px;flex-shrink:0}
+.config-desc{font-size:11px;color:var(--muted);flex:1}
+.config-val{width:200px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-icon">⚙️</div>
+    <div class="hdr-title">CMS <span>Docs</span> — Painel Admin</div>
+  </div>
+  <span class="hdr-badge">Secretaria Executiva</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('dashboard',this)">📊 Dashboard</button>
+  <button class="tab" onclick="showTab('documentos',this)">📄 Documentos</button>
+  <button class="tab" onclick="showTab('avisos',this)">📢 Avisos</button>
+  <button class="tab" onclick="showTab('conselheiros',this)">👥 Conselheiros</button>
+  <button class="tab" onclick="showTab('solicitacoes',this)">📨 Solicitações</button>
+  <button class="tab" onclick="showTab('modulos',this)">🧩 Módulos</button>
+  <button class="tab" onclick="showTab('config',this)">⚙️ Config</button>
+  <button class="tab" onclick="showTab('log',this)">📋 Log</button>
+  <button class="tab" onclick="showTab('quotas',this)">📈 Quotas</button>
+</div>
+
+<div class="content">
+
+  <!-- DASHBOARD -->
+  <div id="panel-dashboard" class="panel active">
+    <div id="dash-area"><div class="spinner"></div></div>
+  </div>
+
+  <!-- DOCUMENTOS -->
+  <div id="panel-documentos" class="panel">
+    <div class="form-card">
+      <div class="sec-hdr"><span class="sec-title">➕ Novo Documento</span></div>
+      <div class="form-card-body">
+        <div class="form-row"><div class="form-group" style="grid-column:1/-1"><label class="form-label">Título *</label><input type="text" id="d-titulo" class="form-ctrl" placeholder="Ex: Portaria 03/2025"></div></div>
+        <div class="form-row cols3">
+          <div class="form-group"><label class="form-label">Tipo</label><select id="d-tipo" class="form-ctrl"><option>Portaria</option><option>Resolução</option><option>Memorando</option><option>Ofício</option><option>Edital</option><option>Institucional</option><option>Documento Externo</option></select></div>
+          <div class="form-group"><label class="form-label">Ano</label><input type="number" id="d-ano" class="form-ctrl" value="2025"></div>
+          <div class="form-group"><label class="form-label">Data</label><input type="date" id="d-data" class="form-ctrl"></div>
+        </div>
+        <div class="form-row cols3">
+          <div class="form-group"><label class="form-label">Acesso</label><select id="d-acesso" class="form-ctrl"><option value="publico">Público</option><option value="diretoria">Diretoria</option><option value="presidente">Presidente</option><option value="secretaria">Secretaria</option></select></div>
+          <div class="form-group"><label class="form-label">Destaque</label><select id="d-destaque" class="form-ctrl"><option value="">Nenhum</option><option value="novo">Novo</option><option value="urgente">Urgente</option><option value="lei">Lei</option><option value="recomendado">Recomendado</option><option value="video">Vídeo</option></select></div>
+          <div class="form-group"><label class="form-label">Mídia</label><select id="d-midia" class="form-ctrl"><option value="pdf">PDF</option><option value="video">Vídeo</option><option value="link">Link</option></select></div>
+        </div>
+        <div class="form-row"><div class="form-group"><label class="form-label">Link Google Drive *</label><input type="url" id="d-link" class="form-ctrl" placeholder="https://drive.google.com/file/d/..."></div></div>
+        <div class="form-row"><div class="form-group"><label class="form-label">Descrição</label><textarea id="d-desc" class="form-ctrl" rows="2"></textarea></div></div>
+        <div id="d-msg" class="msg"></div>
+      </div>
+      <div class="form-footer"><button class="btn btn-ghost" onclick="limparFormDoc()">Limpar</button><button class="btn btn-primary" onclick="salvarDoc()">Salvar Documento</button></div>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar"><span class="sec-title">📄 Documentos cadastrados</span><input type="text" class="tbl-search" placeholder="Buscar..." oninput="filtrar(this,'tbl-docs')"><button class="btn btn-ghost btn-sm" onclick="carregarDocs()">↻</button></div>
+      <div id="tbl-docs-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- AVISOS -->
+  <div id="panel-avisos" class="panel">
+    <div class="form-card">
+      <div class="sec-hdr"><span class="sec-title">➕ Novo Aviso</span></div>
+      <div class="form-card-body">
+        <div class="form-row"><div class="form-group" style="grid-column:1/-1"><label class="form-label">Título *</label><input type="text" id="a-titulo" class="form-ctrl"></div></div>
+        <div class="form-row"><div class="form-group"><label class="form-label">Texto *</label><textarea id="a-texto" class="form-ctrl" rows="3"></textarea></div></div>
+        <div class="form-row cols3">
+          <div class="form-group"><label class="form-label">Tipo</label><select id="a-tipo" class="form-ctrl"><option value="banner">Banner (fixo)</option><option value="popup">Popup (ao abrir)</option><option value="login">Tela de login</option></select></div>
+          <div class="form-group"><label class="form-label">Cor</label><select id="a-cor" class="form-ctrl"><option value="blue">Azul</option><option value="green">Verde</option><option value="yellow">Amarelo</option><option value="red">Vermelho</option></select></div>
+          <div class="form-group"><label class="form-label">Perfil</label><select id="a-perfil" class="form-ctrl"><option value="publico">Todos</option><option value="diretoria">Diretoria+</option><option value="secretaria">Secretaria+</option></select></div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group"><label class="form-label">Válido de</label><input type="date" id="a-inicio" class="form-ctrl"></div>
+          <div class="form-group"><label class="form-label">Válido até</label><input type="date" id="a-fim" class="form-ctrl"></div>
+        </div>
+        <div id="a-msg" class="msg"></div>
+      </div>
+      <div class="form-footer"><button class="btn btn-primary" onclick="salvarAviso()">Publicar Aviso</button></div>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar"><span class="sec-title">📢 Avisos</span><button class="btn btn-ghost btn-sm" onclick="carregarAvisos()">↻</button></div>
+      <div id="tbl-avisos-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- CONSELHEIROS -->
+  <div id="panel-conselheiros" class="panel">
+    <div class="form-card">
+      <div class="sec-hdr"><span class="sec-title">➕ Novo Conselheiro</span></div>
+      <div class="form-card-body">
+        <div class="form-row"><div class="form-group" style="grid-column:1/-1"><label class="form-label">Nome completo *</label><input type="text" id="c-nome" class="form-ctrl"></div></div>
+        <div class="form-row cols3">
+          <div class="form-group"><label class="form-label">Segmento</label><select id="c-segmento" class="form-ctrl"><option value="">Selecione...</option><option>Usuários</option><option>Trabalhadores de Saúde</option><option>Prestadores de Serviço</option><option>Gestor</option></select></div>
+          <div class="form-group"><label class="form-label">Cadeira</label><input type="text" id="c-cadeira" class="form-ctrl"></div>
+          <div class="form-group"><label class="form-label">Perfil</label><select id="c-perfil" class="form-ctrl"><option value="publico">Público</option><option value="diretoria">Diretoria</option><option value="presidente">Presidente</option><option value="secretaria">Secretaria</option><option value="admin">Admin</option></select></div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group"><label class="form-label">Entidade</label><input type="text" id="c-entidade" class="form-ctrl"></div>
+          <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="c-email" class="form-ctrl"></div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group"><label class="form-label">Senha *</label><input type="text" id="c-senha" class="form-ctrl"></div>
+          <div class="form-group"><label class="form-label">Status</label><select id="c-status" class="form-ctrl"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+        </div>
+        <div id="c-msg" class="msg"></div>
+      </div>
+      <div class="form-footer"><button class="btn btn-green" onclick="salvarConselheiro()">Cadastrar Conselheiro</button></div>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar"><span class="sec-title">👥 Conselheiros</span><input type="text" class="tbl-search" placeholder="Buscar..." oninput="filtrar(this,'tbl-cons')"><button class="btn btn-ghost btn-sm" onclick="carregarConselheiros()">↻</button></div>
+      <div id="tbl-cons-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- SOLICITAÇÕES -->
+  <div id="panel-solicitacoes" class="panel">
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar"><span class="sec-title">📨 Solicitações</span><input type="text" class="tbl-search" placeholder="Buscar..." oninput="filtrar(this,'tbl-sols')"><button class="btn btn-ghost btn-sm" onclick="carregarSols()">↻</button></div>
+      <div id="tbl-sols-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div id="panel-modulos" class="panel">
+    <div style="background:var(--lb);border:1px solid #BFDBFE;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1E40AF">
+      <strong>Estados possíveis:</strong>
+      <span class="badge ms-ativo" style="margin:0 4px">ativo</span> funciona normalmente —
+      <span class="badge ms-manutencao" style="margin:0 4px">manutenção</span> exibe tela de aviso aos usuários —
+      <span class="badge ms-inativo" style="margin:0 4px">inativo</span> oculto no menu
+    </div>
+    <div class="modules-grid" id="modules-grid"><div class="spinner"></div></div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="btn btn-primary" onclick="salvarTodosModulos()">💾 Salvar todos os módulos</button>
+    </div>
+    <div id="mod-msg" class="msg" style="margin-top:8px"></div>
+  </div>
+
+  <!-- CONFIG -->
+  <div id="panel-config" class="panel">
+    <div class="tbl-wrap">
+      <div class="sec-hdr"><span class="sec-title">⚙️ Configurações da Home</span><button class="btn btn-primary btn-sm" onclick="salvarConfig()">Salvar tudo</button></div>
+      <div id="config-rows-wrap" style="padding:12px 16px"><div class="spinner"></div></div>
+    </div>
+    <div id="cfg-msg" class="msg"></div>
+  </div>
+
+  <!-- LOG -->
+  <div id="panel-log" class="panel">
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar"><span class="sec-title">📋 Log de acessos</span><input type="text" class="tbl-search" placeholder="Buscar nome..." oninput="filtrarLog(this)"><button class="btn btn-ghost btn-sm" onclick="carregarLog()">↻</button></div>
+      <div id="log-wrap" class="log-wrap"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- QUOTAS -->
+  <div id="panel-quotas" class="panel">
+    <div id="quotas-wrap"><div class="spinner"></div></div>
+  </div>
+
+</div>
+
+<script>
+// ── Tabs ──
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+id).classList.add('active');
+}
+function filtrar(input, tblId) {
+  const q=input.value.toLowerCase();
+  document.querySelectorAll('#'+tblId+' tbody tr').forEach(tr=>{ tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'; });
+}
+function filtrarLog(input) {
+  const q=input.value.toLowerCase();
+  document.querySelectorAll('#log-wrap .log-item').forEach(el=>{ el.style.display=el.textContent.toLowerCase().includes(q)?'':'none'; });
+}
+function badge(val, tipo) {
+  const m={status:{ativo:'b-ativo',inativo:'b-inativo',arquivado:'b-arquivado'},perfil:{publico:'b-publico',diretoria:'b-diretoria',secretaria:'b-secretaria',presidente:'b-presidente',admin:'b-admin'},sol:{recebido:'b-recebido',respondido:'b-respondido',encerrado:'b-arquivado'}};
+  return `<span class="badge ${m[tipo]&&m[tipo][val]?m[tipo][val]:'b-arquivado'}">${val}</span>`;
+}
+function mostrar(id,msg,ok){const el=document.getElementById(id);el.textContent=msg;el.className='msg '+(ok?'ok':'err');}
+
+// ── DASHBOARD ──
+google.script.run.withSuccessHandler(function(d){
+  if(!d.success){document.getElementById('dash-area').innerHTML='<div class="state-msg">Erro ao carregar</div>';return;}
+  const max=Math.max(...Object.values(d.porTipo||{1:1}));
+  document.getElementById('dash-area').innerHTML=`
+    <div class="stats">
+      <div class="stat"><div class="stat-n">${d.documentos.total}</div><div class="stat-l">Documentos</div><div class="stat-s">${d.documentos.ativos} ativos</div></div>
+      <div class="stat green"><div class="stat-n">${d.conselheiros.ativos}</div><div class="stat-l">Conselheiros ativos</div><div class="stat-s">${d.conselheiros.inativos} inativos</div></div>
+      <div class="stat yellow"><div class="stat-n">${d.documentos.arquivados}</div><div class="stat-l">Arquivados</div><div class="stat-s">documentos</div></div>
+      <div class="stat navy"><div class="stat-n">${d.conselheiros.total}</div><div class="stat-l">Total conselheiros</div></div>
+    </div>
+    ${d.quotas?`<div class="quota-wrap"><span class="quota-label">Quotas hoje (${d.quotas.data})</span><div class="quota-bar-bg"><div class="quota-bar-fill ${d.quotas.percentual>80?'danger':d.quotas.percentual>50?'warn':''}" style="width:${d.quotas.percentual}%"></div></div><span class="quota-pct">${d.quotas.total}/${d.quotas.limite} (${d.quotas.percentual}%)</span></div>`:''}
+    <div class="two-col">
+      <div class="tbl-wrap" style="margin:0">
+        <div class="sec-hdr"><span class="sec-title">Documentos por tipo</span></div>
+        <div class="bar-list">${Object.entries(d.porTipo||{}).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<div class="bar-row"><span class="bar-label">${t}</span><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(n/max*100)}%"></div></div><span class="bar-count">${n}</span></div>`).join('')}</div>
+      </div>
+      <div class="tbl-wrap" style="margin:0">
+        <div class="sec-hdr"><span class="sec-title">Documentos recentes</span></div>
+        <div style="padding:10px 14px"><div class="recent-list">${(d.recentes||[]).map(r=>`<div class="recent-item"><span class="recent-titulo">${r.titulo}</span><span class="recent-meta">${badge(r.acesso,'perfil')}</span><span class="recent-meta">${r.data}</span></div>`).join('')}</div></div>
+      </div>
+    </div>`;
+}).withFailureHandler(e=>{document.getElementById('dash-area').innerHTML='<div class="state-msg">❌ '+e.message+'</div>';}).getDashboardData();
+
+// ── DOCUMENTOS ──
+function carregarDocs(){
+  document.getElementById('tbl-docs-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const w=document.getElementById('tbl-docs-wrap');
+    if(!d.success||!d.documentos.length){w.innerHTML='<div class="state-msg">Nenhum documento.</div>';return;}
+    w.innerHTML=`<table id="tbl-docs"><thead><tr><th>ID</th><th>Título</th><th>Tipo</th><th>Ano</th><th>Acesso</th><th>Destaque</th><th>Status</th></tr></thead><tbody>${d.documentos.map(r=>`<tr><td style="color:var(--muted);font-size:10px">${r.id}</td><td style="max-width:200px" class="truncate">${r.titulo}</td><td>${r.tipo}</td><td>${r.ano}</td><td>${badge(r.acesso,'perfil')}</td><td>${r.destaque?`<span class="badge b-publico">${r.destaque}</span>`:'—'}</td><td>${badge(r.status,'status')}</td></tr>`).join('')}</tbody></table>`;
+  }).withFailureHandler(e=>{document.getElementById('tbl-docs-wrap').innerHTML='<div class="state-msg">❌ '+e.message+'</div>';}).getDocumentosAdmin();
+}
+document.querySelector('.tab[onclick*="documentos"]').addEventListener('click',()=>{if(!document.getElementById('tbl-docs-wrap').querySelector('table'))carregarDocs();});
+function salvarDoc(){
+  const titulo=document.getElementById('d-titulo').value.trim(),link=document.getElementById('d-link').value.trim();
+  if(!titulo||!link){mostrar('d-msg','Título e link são obrigatórios.',false);return;}
+  const btn=document.querySelector('#panel-documentos .form-footer .btn-primary');
+  btn.disabled=true;btn.textContent='Salvando...';
+  const dados={titulo,link,tipo:document.getElementById('d-tipo').value,ano:document.getElementById('d-ano').value,data:document.getElementById('d-data').value,acesso:document.getElementById('d-acesso').value,destaque:document.getElementById('d-destaque').value,midia:document.getElementById('d-midia').value,descricao:document.getElementById('d-desc').value.trim()};
+  google.script.run.withSuccessHandler(r=>{btn.disabled=false;btn.textContent='Salvar Documento';if(r.success){mostrar('d-msg','✅ Documento salvo com ID '+r.id,true);limparFormDoc();carregarDocs();}else mostrar('d-msg','❌ '+r.message,false);}).withFailureHandler(e=>{btn.disabled=false;btn.textContent='Salvar Documento';mostrar('d-msg','❌ '+e.message,false);}).addDocumento(dados);
+}
+function limparFormDoc(){['d-titulo','d-link','d-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('d-destaque').value='';}
+
+// ── AVISOS ──
+function carregarAvisos(){
+  document.getElementById('tbl-avisos-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const w=document.getElementById('tbl-avisos-wrap');
+    const lista=d.success?d.avisos:[];
+    if(!lista.length){w.innerHTML='<div class="state-msg">Nenhum aviso ativo.</div>';return;}
+    w.innerHTML=`<table><thead><tr><th>Título</th><th>Tipo</th><th>Perfil</th><th>Válido até</th></tr></thead><tbody>${lista.map(a=>`<tr><td>${a.titulo}</td><td><span class="badge b-publico">${a.tipo}</span></td><td>${badge(a.perfil||'publico','perfil')}</td><td>${a.data_fim||'—'}</td></tr>`).join('')}</tbody></table>`;
+  }).withFailureHandler(()=>{}).getAvisos({perfil:'admin'});
+}
+document.querySelector('.tab[onclick*="avisos"]').addEventListener('click',()=>{if(!document.getElementById('tbl-avisos-wrap').querySelector('table'))carregarAvisos();});
+function salvarAviso(){
+  const titulo=document.getElementById('a-titulo').value.trim(),texto=document.getElementById('a-texto').value.trim();
+  if(!titulo||!texto){mostrar('a-msg','Título e texto são obrigatórios.',false);return;}
+  const dados={titulo,texto,tipo:document.getElementById('a-tipo').value,cor:document.getElementById('a-cor').value,perfil:document.getElementById('a-perfil').value,data_inicio:document.getElementById('a-inicio').value,data_fim:document.getElementById('a-fim').value};
+  google.script.run.withSuccessHandler(r=>{if(r.success){mostrar('a-msg','✅ Aviso publicado!',true);carregarAvisos();}else mostrar('a-msg','❌ '+r.message,false);}).withFailureHandler(e=>mostrar('a-msg','❌ '+e.message,false)).addAviso(dados);
+}
+
+// ── CONSELHEIROS ──
+function carregarConselheiros(){
+  document.getElementById('tbl-cons-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const w=document.getElementById('tbl-cons-wrap');
+    if(!d.success||!d.conselheiros.length){w.innerHTML='<div class="state-msg">Nenhum conselheiro.</div>';return;}
+    w.innerHTML=`<table id="tbl-cons"><thead><tr><th>ID</th><th>Nome</th><th>Segmento</th><th>Perfil</th><th>Status</th><th>Último acesso</th></tr></thead><tbody>${d.conselheiros.map(c=>`<tr><td style="font-size:10px;color:var(--muted)">${c.id}</td><td style="font-weight:600;color:var(--navy)">${c.nome}</td><td>${c.segmento}</td><td>${badge(c.perfil,'perfil')}</td><td>${badge(c.status,'status')}</td><td style="font-size:11px;color:var(--muted)">${c.ultimoAcesso||'—'}</td></tr>`).join('')}</tbody></table>`;
+  }).withFailureHandler(e=>{document.getElementById('tbl-cons-wrap').innerHTML='<div class="state-msg">❌ '+e.message+'</div>';}).getConselheirosAdmin();
+}
+document.querySelector('.tab[onclick*="conselheiros"]').addEventListener('click',()=>{if(!document.getElementById('tbl-cons-wrap').querySelector('table'))carregarConselheiros();});
+function salvarConselheiro(){
+  const nome=document.getElementById('c-nome').value.trim(),senha=document.getElementById('c-senha').value.trim();
+  if(!nome||!senha){mostrar('c-msg','Nome e senha são obrigatórios.',false);return;}
+  const dados={nome,senha,segmento:document.getElementById('c-segmento').value,cadeira:document.getElementById('c-cadeira').value.trim(),perfil:document.getElementById('c-perfil').value,entidade:document.getElementById('c-entidade').value.trim(),email:document.getElementById('c-email').value.trim(),status:document.getElementById('c-status').value};
+  google.script.run.withSuccessHandler(r=>{if(r.success){mostrar('c-msg','✅ Cadastrado com ID '+r.id,true);carregarConselheiros();}else mostrar('c-msg','❌ '+r.message,false);}).withFailureHandler(e=>mostrar('c-msg','❌ '+e.message,false)).addConselheiro(dados);
+}
+
+// ── SOLICITAÇÕES ──
+function carregarSols(){
+  document.getElementById('tbl-sols-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const w=document.getElementById('tbl-sols-wrap');
+    const lista=d.success?d.solicitacoes:[];
+    if(!lista.length){w.innerHTML='<div class="state-msg">Nenhuma solicitação.</div>';return;}
+    w.innerHTML=`<table id="tbl-sols"><thead><tr><th>Protocolo</th><th>Conselheiro</th><th>Assunto</th><th>Status</th><th>Data</th><th>Ação</th></tr></thead><tbody>${lista.map(s=>`<tr><td style="font-family:monospace;font-size:10px">${s.protocolo}</td><td style="font-weight:600">${s.nome}</td><td style="max-width:200px" class="truncate">${s.assunto}</td><td>${badge(s.status,'sol')}</td><td style="font-size:11px;color:var(--muted)">${s.data}</td><td>${s.status==='recebido'?`<button class="btn btn-sm btn-primary" onclick="responderSolPanel('${s.protocolo}',this)">Responder</button>`:'—'}</td></tr>`).join('')}</tbody></table>`;
+  }).withFailureHandler(()=>{}).getSolicitacoes({id:'',perfil:'admin'});
+}
+document.querySelector('.tab[onclick*="solicitacoes"]').addEventListener('click',()=>{if(!document.getElementById('tbl-sols-wrap').querySelector('table'))carregarSols();});
+function responderSolPanel(protocolo,btn){
+  const resp=prompt('Resposta para o protocolo '+protocolo+':');
+  if(!resp)return;
+  btn.disabled=true;
+  google.script.run.withSuccessHandler(r=>{if(r.success){alert('✅ Resposta enviada!');carregarSols();}else{alert('Erro: '+r.message);btn.disabled=false;}}).withFailureHandler(e=>{alert('Erro: '+e.message);btn.disabled=false;}).responderSolicitacao({protocolo,resposta:resp,status:'respondido'});
+}
+
+// ── MÓDULOS ──
+const MODULOS_DEF = [
+  {key:'documentos', nome:'Documentos',    icon:'📄', desc:'Biblioteca principal',        sempre:true},
+  {key:'atas',       nome:'Atas',          icon:'📋', desc:'Atas de reuniões'},
+  {key:'reunioes',   nome:'Reuniões',      icon:'🗓️', desc:'Calendário de reuniões'},
+  {key:'meusdocs',   nome:'Meus Docs',     icon:'👤', desc:'Documentos individuais'},
+  {key:'solicitacoes',nome:'Solicitações', icon:'📨', desc:'Envio de solicitações'},
+  {key:'diretoria',  nome:'Diretoria',     icon:'🏛️', desc:'Área da Diretoria'},
+  {key:'presidente', nome:'Presidente',    icon:'⭐', desc:'Painel do Presidente'},
+  {key:'votacoes',   nome:'Votações',      icon:'🗳️', desc:'Sistema de votação'},
+  {key:'calendario', nome:'Calendário',    icon:'📅', desc:'Eventos e convocações'},
+  {key:'comissoes',  nome:'Comissões',     icon:'🔬', desc:'Câmaras técnicas'},
+  {key:'portal',     nome:'Portal Público',icon:'🌐', desc:'Acesso sem login'},
+];
+
+let _modStatus = {};
+
+document.querySelector('.tab[onclick*="modulos"]').addEventListener('click', carregarModulos);
+
+function carregarModulos() {
+  google.script.run.withSuccessHandler(function(d) {
+    _modStatus = {};
+    if (d.success) {
+      Object.entries(d.modulos).forEach(([k,v]) => { _modStatus[k] = v; });
+    }
+    renderModulos();
+  }).withFailureHandler(function() {
+    MODULOS_DEF.forEach(m => { _modStatus[m.key] = {status:'ativo',msg:''}; });
+    renderModulos();
+  }).getModulosStatus();
+}
+
+function renderModulos() {
+  const grid = document.getElementById('modules-grid');
+  grid.innerHTML = MODULOS_DEF.map(m => {
+    const info = _modStatus[m.key] || {status:'ativo',msg:''};
+    const sc = {ativo:'ms-ativo',manutencao:'ms-manutencao',inativo:'ms-inativo'}[info.status]||'ms-ativo';
+    return `
+      <div class="module-item">
+        <div class="module-header">
+          <div class="module-info">
+            <span class="module-icon">${m.icon}</span>
+            <span class="module-name">${m.nome}</span>
+          </div>
+          <span class="module-status-badge ${sc}" id="badge-${m.key}">${info.status}</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${m.desc}</div>
+        <div class="module-controls">
+          ${m.sempre ? '<span style="font-size:11px;color:var(--muted)">Sempre ativo</span>' : `
+            <button class="btn btn-sm ${info.status==='ativo'?'btn-green':info.status==='manutencao'?'btn-ghost':'btn-ghost'}" onclick="setStatus('${m.key}','ativo',this)" style="${info.status==='ativo'?'':'opacity:.5'}">✓ Ativo</button>
+            <button class="btn btn-sm btn-ghost" onclick="setStatus('${m.key}','manutencao',this)" style="${info.status==='manutencao'?'border-color:#F5C400;color:#92400E':''}">🔧 Manutenção</button>
+            <button class="btn btn-sm btn-ghost" onclick="setStatus('${m.key}','inativo',this)" style="${info.status==='inativo'?'border-color:#DC2626;color:#DC2626':''}">✕ Inativo</button>
+          `}
+        </div>
+        ${!m.sempre ? `<input type="text" class="module-msg-input ${info.status==='manutencao'?'visible':''}" id="msg-${m.key}" value="${info.msg||''}" placeholder="Mensagem de manutenção (opcional)">` : ''}
+      </div>`;
+  }).join('');
+}
+
+function setStatus(key, status, btn) {
+  _modStatus[key] = { ..._modStatus[key], status };
+  // Atualiza visualmente sem salvar ainda
+  const badge = document.getElementById('badge-' + key);
+  const sc = {ativo:'ms-ativo',manutencao:'ms-manutencao',inativo:'ms-inativo'}[status];
+  if (badge) { badge.className = 'module-status-badge ' + sc; badge.textContent = status; }
+  // Mostra/oculta campo de mensagem
+  const msgInput = document.getElementById('msg-' + key);
+  if (msgInput) msgInput.className = 'module-msg-input' + (status==='manutencao'?' visible':'');
+  // Destaca botões ativos
+  btn.closest('.module-controls').querySelectorAll('.btn').forEach(b => {
+    b.style.opacity = '0.5'; b.style.borderColor=''; b.style.color='';
+  });
+  btn.style.opacity = '1';
+}
+
+function salvarTodosModulos() {
+  const updates = {};
+  MODULOS_DEF.forEach(m => {
+    if (m.sempre) return;
+    const info = _modStatus[m.key] || {status:'ativo'};
+    const msgEl = document.getElementById('msg-' + m.key);
+    updates['modulo_' + m.key + '_status'] = info.status;
+    updates['modulo_' + m.key + '_msg']    = msgEl ? msgEl.value.trim() : '';
+  });
+  google.script.run
+    .withSuccessHandler(r => mostrar('mod-msg', r.success ? '✅ Módulos salvos!' : '❌ ' + r.message, r.success))
+    .withFailureHandler(e => mostrar('mod-msg', '❌ ' + e.message, false))
+    .salvarConfigs(updates);
+}
+
+// ── CONFIG ──
+const CONFIG_DEFS = [
+  {key:'home_titulo',       label:'Título da Home',     tipo:'text',   desc:'Texto principal da tela inicial'},
+  {key:'home_subtitulo',    label:'Subtítulo',          tipo:'text',   desc:'Texto secundário'},
+  {key:'home_texto',        label:'Texto livre',        tipo:'textarea',desc:'Parágrafo de boas-vindas'},
+  {key:'home_imagem',       label:'URL imagem de capa', tipo:'url',    desc:'Imagem opcional (vazio = sem imagem)'},
+  {key:'home_banner_texto', label:'Texto do banner',    tipo:'text',   desc:'Banner de destaque (vazio = oculto)'},
+  {key:'home_banner_cor',   label:'Cor do banner',      tipo:'select', desc:'Cor', opts:['blue','green','yellow','red']},
+  {key:'aprovacao_ata',     label:'Aprovação de atas',  tipo:'select', desc:'Ativar aprovação pelos presentes', opts:['sim','nao']},
+];
+
+document.querySelector('.tab[onclick*="config"]').addEventListener('click', carregarConfig);
+
+function carregarConfig() {
+  document.getElementById('config-rows-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const cfg=d.success?d.config:{};
+    document.getElementById('config-rows-wrap').innerHTML=CONFIG_DEFS.map(c=>{
+      const val=cfg[c.key]||'';
+      let input='';
+      if(c.tipo==='select')input=`<select id="cfg-${c.key}" class="form-ctrl config-val">${c.opts.map(o=>`<option ${val===o?'selected':''}>${o}</option>`).join('')}</select>`;
+      else if(c.tipo==='textarea')input=`<textarea id="cfg-${c.key}" class="form-ctrl config-val" rows="2">${val}</textarea>`;
+      else input=`<input type="${c.tipo}" id="cfg-${c.key}" class="form-ctrl config-val" value="${val}" placeholder="${c.desc}">`;
+      return `<div class="config-row"><span class="config-key">${c.label}</span><span class="config-desc">${c.desc}</span>${input}</div>`;
+    }).join('');
+  }).withFailureHandler(()=>{}).getHomeConfig();
+}
+
+function salvarConfig(){
+  const updates={};
+  CONFIG_DEFS.forEach(c=>{const el=document.getElementById('cfg-'+c.key);if(el)updates[c.key]=el.value;});
+  google.script.run.withSuccessHandler(r=>mostrar('cfg-msg',r.success?'✅ Configurações salvas!':'❌ '+r.message,r.success)).withFailureHandler(e=>mostrar('cfg-msg','❌ '+e.message,false)).salvarConfigs(updates);
+}
+
+// ── LOG ──
+document.querySelector('.tab[onclick*="log"]').addEventListener('click', carregarLog);
+function carregarLog(){
+  document.getElementById('log-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const w=document.getElementById('log-wrap');
+    const log=d.success?d.log:[];
+    if(!log.length){w.innerHTML='<div class="state-msg">Nenhum registro.</div>';return;}
+    w.innerHTML=log.map(l=>`<div class="log-item"><span class="log-ts">${l.timestamp}</span><span class="log-nome">${l.nome||'—'}</span><span class="log-acao">${l.acao}${l.detalhes?' — '+l.detalhes:''}</span></div>`).join('');
+  }).withFailureHandler(()=>{}).getLogAcessos({limit:'300'});
+}
+
+// ── QUOTAS ──
+document.querySelector('.tab[onclick*="quotas"]').addEventListener('click', carregarQuotas);
+function carregarQuotas(){
+  document.getElementById('quotas-wrap').innerHTML='<div class="spinner"></div>';
+  google.script.run.withSuccessHandler(function(d){
+    const q=d.success?d.quotas:{};
+    const pct=q.percentual||0;
+    const fc=pct>80?'danger':pct>50?'warn':'';
+    const top=Object.entries(q.porAcao||{}).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const mx=top.length?top[0][1]:1;
+    document.getElementById('quotas-wrap').innerHTML=`
+      <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat"><div class="stat-n">${q.total||0}</div><div class="stat-l">Requisições hoje</div><div class="stat-s">${q.data||''}</div></div>
+        <div class="stat green"><div class="stat-n">${q.limite||20000}</div><div class="stat-l">Limite diário</div></div>
+        <div class="stat ${pct>80?'':pct>50?'yellow':'navy'}"><div class="stat-n">${pct}%</div><div class="stat-l">Uso do limite</div></div>
+      </div>
+      <div class="quota-wrap"><span class="quota-label">Uso total do dia</span><div class="quota-bar-bg"><div class="quota-bar-fill ${fc}" style="width:${pct}%"></div></div><span class="quota-pct">${pct}%</span></div>
+      <div class="tbl-wrap">
+        <div class="sec-hdr"><span class="sec-title">Por ação</span></div>
+        <div class="bar-list">${top.map(([a,n])=>`<div class="bar-row"><span class="bar-label">${a}</span><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(n/mx*100)}%"></div></div><span class="bar-count">${n}</span></div>`).join('')}</div>
+      </div>`;
+  }).withFailureHandler(()=>{document.getElementById('quotas-wrap').innerHTML='<div class="state-msg">Erro ao carregar quotas.</div>';}).getQuotas({});
+}
+
+document.getElementById('d-data').valueAsDate = new Date();
+document.getElementById('a-inicio').valueAsDate = new Date();
+</script>
+</body>
+</html>
