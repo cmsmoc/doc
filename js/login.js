@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (result.ok) {
       UI.toast('Login realizado com sucesso!', 'success');
       setTimeout(() => {
-        window.location.href = 'home.html';
+        window.location.href = 'index.html';
       }, 600);
     } else {
       _setLoading(false);
