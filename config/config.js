@@ -19,7 +19,7 @@ const CONFIG = {
 
   API: {
     // ⚠️  Substitua pela URL real da sua implantação GAS
-    GAS_URL: 'https://script.google.com/macros/s/SEU_DEPLOYMENT_ID/exec',
+    GAS_URL: 'https://script.google.com/macros/s/AKfycbwWxaGjofMul-5MV6E_YVS3CWsic8cv3--YnDBBsUgu395s5e1ZUO2lbC8X33K0Lu9E/exec',
     TIMEOUT: 12000,
   },
 
