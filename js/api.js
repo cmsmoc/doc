@@ -297,8 +297,48 @@ const Api = (() => {
       .catch(() => {});
   }
 
+  // ── Admin ─────────────────────────────────────────────────────
+  // Mantidos para compatibilidade com Painel.html e index.html
+  async function getDashboardData() {
+    return _req({ action: 'getDashboardData' });
+  }
+
+  async function getLogAcessos(limit = 200) {
+    const d = await _req({ action: 'getLogAcessos', limit });
+    return d.success ? d.log : [];
+  }
+
+  async function getConselheirosAdmin() {
+    const d = await _req({ action: 'getConselheirosAdmin' });
+    return d.success ? d.conselheiros : [];
+  }
+
+  async function getDocumentosAdmin() {
+    const d = await _req({ action: 'getDocumentosAdmin' });
+    return d.success ? d.documentos : [];
+  }
+
+  async function addDocumento(dados) {
+    const result = await _req({ action: 'addDocumento', ...dados });
+    if (result.success) clearCache('docs_');
+    return result;
+  }
+
+  async function addConselheiro(dados) {
+    const result = await _req({ action: 'addConselheiro', ...dados });
+    if (result.success) clearCache('conselheiros');
+    return result;
+  }
+
+  async function addAviso(dados) {
+    return _req({ action: 'addAviso', ...dados });
+  }
+
   // ── Utilitários públicos ──────────────────────────────────────
   function clearCache(pattern) { _CACHE.clear(pattern); }
+
+  // Alias de compatibilidade com código antigo que usava clearAllCache()
+  function clearAllCache() { _CACHE.clear(); }
 
   return {
     // Auth
@@ -321,7 +361,11 @@ const Api = (() => {
     getFavoritos, toggleFavorito,
     // Push
     salvarPushSubscription, removerPushSubscription,
+    // Admin (Painel.html)
+    getDashboardData, getLogAcessos,
+    getConselheirosAdmin, getDocumentosAdmin,
+    addDocumento, addConselheiro, addAviso,
     // Utils
-    registrarLog, clearCache,
+    registrarLog, clearCache, clearAllCache,
   };
 })();
