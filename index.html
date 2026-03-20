@@ -3,267 +3,819 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMS Doc - Documentos do Conselho</title>
+  <title>Documentos — CMS Montes Claros</title>
   <meta name="description" content="Biblioteca digital de documentos do Conselho Municipal de Saúde de Montes Claros">
   <meta name="theme-color" content="#0D2E5A">
-
-  <!-- PWA -->
-  <link rel="manifest" href="pwa/manifest.json">
-  <link rel="icon"          type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
-  <link rel="apple-touch-icon"               href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
-
-  <!-- iOS PWA -->
-  <meta name="apple-mobile-web-app-capable"          content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title"            content="CMS Docs">
-
-  <!-- Microsoft -->
-  <meta name="msapplication-TileColor" content="#0D2E5A">
-  <meta name="msapplication-TileImage" content="https://i.ibb.co/ksxpJdVw/iconcms512.png">
-
-  <!-- Estilos -->
+  <meta name="apple-mobile-web-app-title" content="CMS Docs">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/brand.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ══════════════════════════════════════════════════════
+       INDEX v3 — BIBLIOTECA DOCUMENTAL
+       Estética: editorial institucional com densidade refinada.
+       Inspiração: arquivo público + design system governamental moderno.
+       ══════════════════════════════════════════════════════ */
+
+    /* ── Navbar ── */
+    #navbar { background: var(--cms-navy); }
+    .navbar-back {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: .5px; color: rgba(255,255,255,.6);
+      background: none; border: none; cursor: pointer; padding: 4px 8px;
+      border-radius: var(--radius-md); transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+    .navbar-back:hover { color: white; background: rgba(255,255,255,.1); }
+
+    /* ── Hero da biblioteca ── */
+    .lib-hero {
+      background: var(--cms-navy);
+      padding: var(--space-7) var(--space-6) 0;
+      position: relative; overflow: hidden;
+    }
+    .lib-hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 32px;
+      background: var(--cms-off); border-radius: 24px 24px 0 0;
+    }
+    .lib-hero-inner {
+      max-width: 960px; margin: 0 auto;
+      padding-bottom: var(--space-8);
+      position: relative; z-index: 1;
+    }
+    .lib-hero-top {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5);
+    }
+    .lib-eyebrow {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--cms-yellow); margin-bottom: var(--space-2);
+    }
+    .lib-title {
+      font-family: var(--font-display); font-size: clamp(24px, 4vw, 36px);
+      font-weight: 900; color: white; letter-spacing: -1px; line-height: 1.05;
+    }
+    .lib-title em { color: var(--cms-yellow); font-style: normal; }
+    .lib-meta {
+      font-size: var(--text-xs); color: rgba(255,255,255,.45);
+      margin-top: var(--space-2);
+    }
+    .lib-stats {
+      display: flex; gap: var(--space-5);
+    }
+    .lib-stat {
+      text-align: right;
+    }
+    .lib-stat-n {
+      font-family: var(--font-display); font-size: 28px; font-weight: 900;
+      color: white; line-height: 1;
+    }
+    .lib-stat-l { font-size: 10px; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── Search + filtros integrados ── */
+    .search-strip {
+      background: var(--cms-navy); padding: 0 var(--space-6) var(--space-8);
+      position: relative; z-index: 2;
+    }
+    .search-strip-inner { max-width: 960px; margin: 0 auto; }
+    .search-main {
+      display: flex; gap: var(--space-2); align-items: center;
+      background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.15);
+      border-radius: var(--radius-xl); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+      transition: all var(--transition-base);
+    }
+    .search-main:focus-within {
+      background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.35);
+    }
+    .search-main-icon { font-size: 16px; opacity: .6; flex-shrink: 0; }
+    .search-main-input {
+      flex: 1; background: none; border: none; outline: none;
+      font-family: 'Open Sans', sans-serif; font-size: var(--text-sm);
+      color: white; min-width: 0;
+    }
+    .search-main-input::placeholder { color: rgba(255,255,255,.4); }
+    .search-main-clear {
+      background: rgba(255,255,255,.15); border: none; border-radius: var(--radius-full);
+      color: rgba(255,255,255,.7); font-size: 12px; cursor: pointer;
+      width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background var(--transition-fast);
+    }
+    .search-main-clear:hover { background: rgba(255,255,255,.25); }
+
+    /* ── Conteúdo ── */
+    .lib-wrap { max-width: 960px; margin: 0 auto; padding: var(--space-6); }
+
+    /* ── Categoria pills ── */
+    .cat-pills-wrap {
+      display: flex; gap: var(--space-2); overflow-x: auto;
+      padding-bottom: var(--space-2); margin-bottom: var(--space-6);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .cat-pills-wrap::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border-radius: var(--radius-full);
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: .3px; cursor: pointer; white-space: nowrap;
+      border: 1.5px solid var(--cms-border); background: white;
+      color: var(--cms-muted); transition: all var(--transition-fast);
+    }
+    .cat-pill:hover { border-color: var(--cms-blue); color: var(--cms-blue); }
+    .cat-pill.active {
+      background: var(--cms-navy); color: white; border-color: var(--cms-navy);
+    }
+    .cat-pill-icon { font-size: 13px; }
+    .cat-pill-count {
+      background: rgba(0,0,0,.15); border-radius: var(--radius-full);
+      padding: 0 5px; font-size: 9px;
+    }
+    .cat-pill.active .cat-pill-count { background: rgba(255,255,255,.2); }
+
+    /* ── Seção header ── */
+    .section-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-4); gap: var(--space-3);
+    }
+    .section-head {
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--cms-blue);
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .section-head::after { content: ''; flex: 1; /* não esticar */ }
+    .section-count {
+      font-family: var(--font-display); font-size: 11px; font-weight: 600;
+      color: var(--cms-muted);
+    }
+
+    /* ── Documentos recentes (horizontal scroll) ── */
+    .recentes-scroll {
+      display: flex; gap: var(--space-3); overflow-x: auto;
+      padding-bottom: var(--space-2); margin-bottom: var(--space-7);
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .recentes-scroll::-webkit-scrollbar { display: none; }
+    .recente-card {
+      flex-shrink: 0; width: 220px;
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-4);
+      text-decoration: none; display: flex; flex-direction: column; gap: var(--space-3);
+      transition: all var(--transition-base); position: relative; overflow: hidden;
+      cursor: pointer;
+    }
+    .recente-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--cms-blue);
+    }
+    .recente-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--cms-blue); }
+    .recente-card-tipo {
+      font-family: var(--font-display); font-size: 9px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--cms-blue);
+    }
+    .recente-card-titulo {
+      font-family: var(--font-display); font-size: 13px; font-weight: 800;
+      color: var(--cms-navy); line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .recente-card-data { font-size: 11px; color: var(--cms-muted); margin-top: auto; }
+    .recente-new-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: var(--cms-yellow); color: var(--cms-navy);
+      font-family: var(--font-display); font-size: 8px; font-weight: 800;
+      letter-spacing: 1px; padding: 2px 6px; border-radius: var(--radius-full);
+    }
+
+    /* ── Favoritos ── */
+    .favoritos-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+      gap: var(--space-3); margin-bottom: var(--space-7);
+    }
+    .fav-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+      display: flex; align-items: center; gap: var(--space-3);
+      text-decoration: none; transition: all var(--transition-base);
+      border-left: 4px solid var(--cms-yellow);
+    }
+    .fav-card:hover { box-shadow: var(--shadow-sm); transform: translateX(2px); }
+    .fav-card-icon { font-size: 20px; flex-shrink: 0; }
+    .fav-card-info { flex: 1; min-width: 0; }
+    .fav-card-titulo {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      color: var(--cms-navy); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .fav-card-meta { font-size: 11px; color: var(--cms-muted); margin-top: 2px; }
+    .fav-remove {
+      background: none; border: none; color: var(--cms-muted); cursor: pointer;
+      font-size: 14px; padding: 4px; border-radius: var(--radius-md);
+      flex-shrink: 0; transition: all var(--transition-fast);
+    }
+    .fav-remove:hover { background: var(--lr, #FEE2E2); color: var(--red, #DC2626); }
+
+    /* ── Grade principal de documentos ── */
+    .docs-main-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-3);
+    }
+
+    /* Card de documento */
+    .doc-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      transition: all var(--transition-base);
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+    .doc-card:hover { box-shadow: var(--shadow-md); border-color: #93C5FD; transform: translateY(-1px); }
+
+    /* Faixa de destaque */
+    .doc-destaque-bar {
+      height: 4px; width: 100%;
+    }
+    .doc-destaque-bar.novo        { background: var(--cms-blue); }
+    .doc-destaque-bar.urgente     { background: #DC2626; }
+    .doc-destaque-bar.lei         { background: var(--cms-navy); }
+    .doc-destaque-bar.recomendado { background: var(--cms-green); }
+    .doc-destaque-bar.video       { background: #7C3AED; }
+    .doc-destaque-bar.portaria    { background: #D97706; }
+    .doc-destaque-bar.none        { background: var(--cms-border); }
+
+    .doc-card-body { padding: var(--space-4); flex: 1; display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .doc-card-head {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2);
+    }
+    .doc-tipo-chip {
+      font-family: var(--font-display); font-size: 9px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      background: var(--cms-off); color: var(--cms-blue);
+      padding: 2px 8px; border-radius: var(--radius-full);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .doc-destaque-chip {
+      font-family: var(--font-display); font-size: 8px; font-weight: 800;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 2px 7px; border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+    .doc-destaque-chip.novo        { background: #DBEAFE; color: #1E40AF; }
+    .doc-destaque-chip.urgente     { background: #FEE2E2; color: #991B1B; }
+    .doc-destaque-chip.lei         { background: #EFF6FF; color: var(--cms-navy); }
+    .doc-destaque-chip.recomendado { background: #D1FAE5; color: #065F46; }
+    .doc-destaque-chip.video       { background: #EDE9FE; color: #5B21B6; }
+    .doc-destaque-chip.portaria    { background: #FEF3C7; color: #92400E; }
+
+    .doc-titulo {
+      font-family: var(--font-display); font-size: var(--text-sm); font-weight: 800;
+      color: var(--cms-navy); line-height: 1.35; flex: 1;
+    }
+    .doc-desc {
+      font-size: 12px; color: var(--cms-muted); line-height: 1.55;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .doc-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      border-top: 1px solid var(--cms-border);
+      background: var(--cms-off);
+    }
+    .doc-meta { display: flex; align-items: center; gap: var(--space-2); }
+    .doc-ano {
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      color: var(--cms-muted);
+    }
+    .doc-data { font-size: 11px; color: var(--cms-muted); }
+    .doc-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+    .doc-btn-open {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 12px; border-radius: var(--radius-md);
+      background: var(--cms-navy); color: white;
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: .5px; text-decoration: none; cursor: pointer; border: none;
+      transition: background var(--transition-fast);
+    }
+    .doc-btn-open:hover { background: var(--cms-blue); }
+    .doc-btn-open.video { background: #7C3AED; }
+    .doc-btn-open.video:hover { background: #6D28D9; }
+
+    .doc-btn-fav {
+      background: none; border: none; cursor: pointer; padding: 5px;
+      border-radius: var(--radius-md); font-size: 16px;
+      transition: transform var(--transition-fast);
+      color: var(--cms-muted);
+    }
+    .doc-btn-fav:hover { transform: scale(1.2); }
+    .doc-btn-fav.ativo { color: var(--cms-yellow); }
+
+    /* Filtro ano inline */
+    .ano-select {
+      padding: 5px 10px; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-md); font-size: 12px;
+      background: white; color: var(--cms-ink); cursor: pointer;
+      font-family: var(--font-display); font-weight: 600;
+    }
+    .ano-select:focus { outline: none; border-color: var(--cms-blue); }
+
+    /* Empty / skeleton */
+    .docs-empty {
+      grid-column: 1 / -1; text-align: center; padding: var(--space-12) var(--space-6);
+      color: var(--cms-muted);
+    }
+    .docs-empty-icon { font-size: 48px; margin-bottom: var(--space-4); opacity: .4; }
+    .docs-empty-title { font-family: var(--font-display); font-size: var(--text-lg); font-weight: 800; color: var(--cms-navy); margin-bottom: var(--space-2); }
+
+    .doc-skeleton {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    .doc-skeleton-bar  { height: 4px; background: #E5E7EB; }
+    .doc-skeleton-body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+    .doc-skeleton-line { background: #F3F4F6; border-radius: 4px; }
+    .doc-skeleton-footer { height: 44px; background: var(--cms-off); border-top: 1px solid var(--cms-border); }
+    @keyframes shimmer {
+      0%,100%{ opacity: 1; } 50%{ opacity: .6; }
+    }
+
+    /* Rodapé info */
+    .lib-footer {
+      display: flex; align-items: center; justify-content: center; gap: var(--space-3);
+      padding: var(--space-6) 0 var(--space-10);
+      font-size: 12px; color: var(--cms-muted);
+    }
+    .lib-footer-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--cms-border); }
+
+    @media (max-width: 600px) {
+      .lib-stats { display: none; }
+      .docs-main-grid { grid-template-columns: 1fr; }
+      .favoritos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-
-  <!-- ── Loading Screen ───────────────────────────────────── -->
+  <!-- Loading -->
   <div id="loading-screen">
-    <img
-      src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png"
-      alt="CMS Montes Claros"
-      class="loading-logo"
-    >
+    <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="loading-logo">
     <div class="loading-spinner"></div>
     <p class="loading-text">Carregando Documentos</p>
   </div>
 
-  <!-- ── Toast Container ──────────────────────────────────── -->
   <div id="toast-container" aria-live="polite"></div>
+  <div id="offline-banner" role="status"><span>📶</span><span>Modo offline — exibindo cache</span></div>
 
-  <!-- ── Banner Offline ───────────────────────────────────── -->
-  <div id="offline-banner" role="status" aria-live="polite">
-    <span>📶</span>
-    <span>Modo offline — exibindo documentos em cache</span>
+  <!-- NAVBAR -->
+  <nav id="navbar" role="navigation">
+    <div class="navbar-brand">
+      <a href="home.html" class="navbar-back" title="Voltar ao início">
+        ← <span>Início</span>
+      </a>
+      <div class="navbar-divider"></div>
+      <div class="navbar-title">Documentos <span>CMS-MOC</span></div>
+    </div>
+    <div class="navbar-actions">
+      <div class="navbar-user">
+        <div class="navbar-avatar" id="nav-avatar">--</div>
+        <span class="navbar-name" id="nav-user-name"></span>
+      </div>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" id="btn-refresh" title="Atualizar" aria-label="Atualizar documentos">↻</button>
+      <button class="navbar-btn" onclick="location.href='change-password.html'" title="Alterar senha">🔑</button>
+      <button class="navbar-btn" onclick="location.href='perfil.html'" title="Meu perfil">👤</button>
+      <button class="navbar-btn" id="btn-logout" title="Sair">⎋ Sair</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="lib-hero">
+    <div class="lib-hero-inner">
+      <div class="lib-hero-top">
+        <div>
+          <p class="lib-eyebrow">Conselho Municipal de Saúde</p>
+          <h1 class="lib-title">Biblioteca <em>Documental</em></h1>
+          <p class="lib-meta">Montes Claros — MG · Secretaria Executiva</p>
+        </div>
+        <div class="lib-stats" id="lib-stats">
+          <div class="lib-stat">
+            <div class="lib-stat-n" id="stat-total">—</div>
+            <div class="lib-stat-l">Documentos</div>
+          </div>
+          <div class="lib-stat">
+            <div class="lib-stat-n" id="stat-tipos">—</div>
+            <div class="lib-stat-l">Categorias</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Busca no hero -->
+      <div class="search-strip-inner">
+        <div class="search-main" id="search-wrap">
+          <span class="search-main-icon">🔍</span>
+          <input type="search" id="search-input" class="search-main-input"
+            placeholder="Buscar por título, tipo ou descrição..."
+            autocomplete="off" spellcheck="false"
+            aria-label="Buscar documentos">
+          <button class="search-main-clear hidden" id="search-clear" title="Limpar">✕</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- ── Dashboard ────────────────────────────────────────── -->
-  <div id="dashboard-page" class="active">
+  <!-- CONTEÚDO -->
+  <div class="lib-wrap">
 
-    <!-- NAVBAR ─────────────────────────────────────────────── -->
-    <nav id="navbar" role="navigation" aria-label="Navegação principal">
+    <!-- Categoria pills -->
+    <div class="cat-pills-wrap" id="cat-pills" role="group" aria-label="Filtrar por tipo"></div>
 
-      <!-- Marca -->
-      <div class="navbar-brand">
-        <img
-          src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png"
-          alt="CMS Montes Claros"
-          class="navbar-logo"
-        >
-        <div class="navbar-title">
-          Documentos<br>
-          <span>Conselho Municipal de Saúde</span>
-        </div>
+    <!-- Documentos recentes -->
+    <div id="recentes-section" style="display:none">
+      <div class="section-row">
+        <span class="section-head">🕐 Adicionados recentemente</span>
+        <select id="filter-ano" class="ano-select" aria-label="Filtrar por ano">
+          <option value="">Todos os anos</option>
+        </select>
       </div>
+      <div class="recentes-scroll" id="recentes-scroll"></div>
+    </div>
 
-      <!-- Ações -->
-      <div class="navbar-actions">
-
-        <!-- Usuário logado -->
-        <div class="navbar-user" title="Usuário logado">
-          <div class="navbar-avatar" id="nav-avatar" aria-hidden="true">--</div>
-          <span class="navbar-name" id="nav-user-name"></span>
-        </div>
-
-        <div class="navbar-divider" aria-hidden="true"></div>
-
-        <!-- Atualizar -->
-        <button
-          id="btn-refresh"
-          class="navbar-btn"
-          title="Atualizar documentos"
-          aria-label="Atualizar lista de documentos"
-        >
-          <span class="navbar-btn-icon">↻</span>
-          <span class="sr-only">Atualizar</span>
-        </button>
-
-        <!-- Logout -->
-        <button
-          id="btn-logout"
-          class="navbar-btn"
-          title="Sair do sistema"
-          aria-label="Encerrar sessão"
-        >
-          <span class="navbar-btn-icon">⎋</span>
-          <span>Sair</span>
-        </button>
-
+    <!-- Favoritos -->
+    <div id="favoritos-section" style="display:none">
+      <div class="section-row">
+        <span class="section-head">⭐ Meus favoritos</span>
+        <span class="section-count" id="favs-count"></span>
       </div>
-    </nav>
+      <div class="favoritos-grid" id="favoritos-grid"></div>
+    </div>
 
-    <!-- CONTEÚDO PRINCIPAL ──────────────────────────────────── -->
-    <main class="dashboard-wrap" role="main">
+    <!-- Todos os documentos -->
+    <div class="section-row" id="todos-header">
+      <span class="section-head" id="todos-label">📄 Todos os documentos</span>
+      <span class="section-count" id="docs-count"></span>
+    </div>
+    <div class="docs-main-grid" id="docs-grid" aria-live="polite" role="list">
+      <!-- Skeletons iniciais -->
+      ${Array(6).fill(0).map(() => `
+        <div class="doc-skeleton">
+          <div class="doc-skeleton-bar"></div>
+          <div class="doc-skeleton-body">
+            <div class="doc-skeleton-line" style="height:10px;width:40%"></div>
+            <div class="doc-skeleton-line" style="height:16px;width:85%"></div>
+            <div class="doc-skeleton-line" style="height:16px;width:65%"></div>
+            <div class="doc-skeleton-line" style="height:12px;width:50%"></div>
+          </div>
+          <div class="doc-skeleton-footer"></div>
+        </div>`).join('')}
+    </div>
 
-      <!-- Cabeçalho do painel -->
-      <div class="dashboard-header">
-        <p class="dashboard-welcome">
-          Bem-vindo, <strong id="welcome-name">Conselheiro</strong>
-        </p>
-        <h1 class="dashboard-title">
-          Biblioteca <em>Documental</em>
-        </h1>
-        <p class="dashboard-subtitle">
-          Documentos institucionais do Conselho Municipal de Saúde de Montes Claros
-        </p>
-      </div>
+    <!-- Rodapé -->
+    <div class="lib-footer">
+      <span>CMS Montes Claros</span>
+      <div class="lib-footer-dot"></div>
+      <span>Secretaria Executiva</span>
+      <div class="lib-footer-dot"></div>
+      <span id="footer-versao">v3.0</span>
+    </div>
 
-      <!-- Barra de busca -->
-      <div
-        class="search-bar-wrap"
-        role="search"
-        aria-label="Buscar documentos"
-      >
-        <span class="search-icon" aria-hidden="true">🔍</span>
-        <input
-          type="search"
-          id="search-input"
-          placeholder="Buscar por título, descrição ou tipo de documento..."
-          aria-label="Campo de busca de documentos"
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <span
-          class="search-clear hidden"
-          id="search-clear"
-          role="button"
-          tabindex="0"
-          title="Limpar busca"
-          aria-label="Limpar campo de busca"
-        >✕</span>
-      </div>
+  </div><!-- /lib-wrap -->
 
-      <!-- Barra de filtros -->
-      <div
-        class="filters-bar"
-        role="group"
-        aria-label="Filtros de documentos"
-      >
-
-        <div class="filter-group">
-          <label class="filter-label" for="filter-tipo">Tipo</label>
-          <select
-            id="filter-tipo"
-            class="filter-select"
-            aria-label="Filtrar por tipo de documento"
-          >
-            <option value="">Todos os tipos</option>
-          </select>
-        </div>
-
-        <div class="filters-divider" aria-hidden="true"></div>
-
-        <div class="filter-group">
-          <label class="filter-label" for="filter-ano">Ano</label>
-          <select
-            id="filter-ano"
-            class="filter-select"
-            aria-label="Filtrar por ano"
-          >
-            <option value="">Todos os anos</option>
-          </select>
-        </div>
-
-        <button
-          id="clear-filters"
-          class="btn-clear-filters"
-          title="Limpar todos os filtros"
-          aria-label="Limpar todos os filtros ativos"
-        >
-          Limpar filtros
-        </button>
-
-        <div class="filters-count" id="docs-count" aria-live="polite" aria-atomic="true">
-          <!-- Preenchido via JS -->
-        </div>
-
-      </div>
-
-      <!-- Grid de documentos -->
-      <section
-        id="docs-grid"
-        aria-label="Lista de documentos"
-        aria-live="polite"
-      >
-        <!-- Preenchido via JS -->
-      </section>
-
-      <!-- Informação de rodapé -->
-      <div class="docs-info" id="docs-info">
-        <span>CMS Montes Claros</span>
-        <span class="dot" aria-hidden="true"></span>
-        <span>Secretaria Executiva</span>
-        <span class="dot" aria-hidden="true"></span>
-        <span>Sistema de Documentos v1.0</span>
-      </div>
-
-    </main>
-
-  </div><!-- /#dashboard-page -->
-
-  <!-- ── PWA Install Banner ──────────────────────────────── -->
-  <div
-    id="install-banner"
-    role="complementary"
-    aria-label="Instalar aplicativo"
-  >
+  <!-- PWA install -->
+  <div id="install-banner">
     <div class="install-banner-text">
-      <img
-        src="https://i.ibb.co/4g2ZZyGZ/iconcms1.png"
-        alt=""
-        class="install-banner-icon"
-        aria-hidden="true"
-      >
-      <div class="install-banner-info">
-        <h4>Instalar CMS Docs</h4>
-        <p>Acesse rapidamente pelo seu celular</p>
-      </div>
+      <img src="https://i.ibb.co/4g2ZZyGZ/iconcms1.png" class="install-banner-icon" alt="">
+      <div class="install-banner-info"><h4>Instalar CMS Docs</h4><p>Acesso rápido pelo celular</p></div>
     </div>
     <div class="install-banner-actions">
-      <button
-        id="btn-install-dismiss"
-        class="btn btn-ghost btn-sm"
-        aria-label="Fechar banner de instalação"
-      >Agora não</button>
-      <button
-        id="btn-install"
-        class="btn btn-primary btn-sm"
-        aria-label="Instalar aplicativo"
-      >Instalar</button>
+      <button id="btn-install-dismiss" class="btn btn-ghost btn-sm">Agora não</button>
+      <button id="btn-install"          class="btn btn-primary btn-sm">Instalar</button>
     </div>
   </div>
 
-  <!-- Scripts (ordem importa!) -->
   <script src="config/config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/search.js"></script>
   <script src="js/ui.js"></script>
-  <script src="js/app.js"></script>
-
-  <!-- Inicializa nome de boas-vindas extra -->
+  <script src="js/manutencao.js"></script>
   <script>
-    // Preenche nome na saudação assim que a sessão é lida
-    (function() {
-      try {
-        const s = JSON.parse(localStorage.getItem('cms_session') || '{}');
-        if (s.nome) {
-          const el = document.getElementById('welcome-name');
-          if (el) el.textContent = s.nome.split(' ')[0];
-        }
-      } catch(e) {}
-    })();
-  </script>
+  // ══════════════════════════════════════════════════════════
+  // BIBLIOTECA DOCUMENTAL v3
+  // ══════════════════════════════════════════════════════════
 
+  let _todos      = [];   // todos os documentos
+  let _filtrados  = [];   // após filtros e busca
+  let _favoritos  = new Set(); // IDs favoritados
+  let _catAtiva   = '';
+  let _anoAtivo   = '';
+  let _busca      = '';
+  let _categorias = [];
+
+  const MIDIA_ICON = { pdf:'📄', video:'▶️', link:'🔗', imagem:'🖼️' };
+  const DESTAQUE_LABEL = CONFIG.DESTAQUES || {};
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    Auth.requireAuth();
+    UI.init();
+    const session = Auth.getSession();
+    UI.setNavUser(session);
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (confirm('Sair do sistema?')) Auth.logout();
+    });
+    document.getElementById('btn-refresh').addEventListener('click', async () => {
+      Api.clearCache('docs_');
+      await _carregar();
+    });
+
+    // Busca
+    const searchInput = document.getElementById('search-input');
+    const searchClear = document.getElementById('search-clear');
+    let debounce;
+    searchInput.addEventListener('input', () => {
+      _busca = searchInput.value.trim().toLowerCase();
+      searchClear.classList.toggle('hidden', !_busca);
+      clearTimeout(debounce);
+      debounce = setTimeout(_aplicarFiltros, 200);
+    });
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      _busca = '';
+      searchClear.classList.add('hidden');
+      searchInput.focus();
+      _aplicarFiltros();
+    });
+
+    // Filtro ano
+    document.getElementById('filter-ano').addEventListener('change', e => {
+      _anoAtivo = e.target.value;
+      _aplicarFiltros();
+    });
+
+    // PWA install
+    _initPWAInstall();
+
+    await _carregar();
+
+    window.addEventListener('offline', () => UI.setOffline(true));
+    window.addEventListener('online',  () => UI.setOffline(false));
+    if (!navigator.onLine) UI.setOffline(true);
+  });
+
+  // ── Carregamento ────────────────────────────────────────────
+  async function _carregar() {
+    const [docs, cats, favs] = await Promise.all([
+      Api.getDocumentos().catch(() => []),
+      Api.getCategorias().catch(() => CONFIG.DEFAULT_CATEGORIAS || []),
+      Api.getFavoritos().catch(() => []),
+    ]);
+
+    _todos      = docs;
+    _categorias = cats;
+    _favoritos  = new Set(favs.map(f => f.id));
+
+    // Stats
+    const tipos = new Set(docs.map(d => d.tipo).filter(Boolean));
+    document.getElementById('stat-total').textContent = docs.length;
+    document.getElementById('stat-tipos').textContent = tipos.size;
+
+    // Anos no select
+    const anos = [...new Set(docs.map(d => d.data?.substring(0,4)).filter(Boolean))].sort((a,b)=>b-a);
+    const selAno = document.getElementById('filter-ano');
+    anos.forEach(a => { const o = document.createElement('option'); o.value=a; o.textContent=a; selAno.appendChild(o); });
+
+    // Renderiza pills de categoria
+    _renderCatPills();
+
+    // Renderiza recentes (últimos 10 por data)
+    _renderRecentes(docs.slice(0, 10));
+
+    // Favoritos
+    _renderFavoritos();
+
+    // Grade principal
+    _aplicarFiltros();
+
+    UI.hideLoadingScreen();
+  }
+
+  // ── Categoria pills ──────────────────────────────────────────
+  function _renderCatPills() {
+    const wrap = document.getElementById('cat-pills');
+    wrap.innerHTML = '';
+
+    // "Todos" pill
+    const todos = document.createElement('button');
+    todos.className = 'cat-pill active';
+    todos.dataset.tipo = '';
+    todos.innerHTML = '<span class="cat-pill-icon">📋</span><span>Todos</span>';
+    todos.onclick = () => _setCat('', todos);
+    wrap.appendChild(todos);
+
+    // Uma pill por categoria com contagem
+    _categorias.forEach(cat => {
+      const count = _todos.filter(d => d.tipo === cat.tipo).length;
+      if (!count) return;
+      const btn = document.createElement('button');
+      btn.className = 'cat-pill';
+      btn.dataset.tipo = cat.tipo;
+      btn.innerHTML = `<span class="cat-pill-icon">${cat.icon||'📄'}</span><span>${cat.tipo}</span><span class="cat-pill-count">${count}</span>`;
+      btn.onclick = () => _setCat(cat.tipo, btn);
+      wrap.appendChild(btn);
+    });
+  }
+
+  function _setCat(tipo, btn) {
+    _catAtiva = tipo;
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    _aplicarFiltros();
+  }
+
+  // ── Recentes ─────────────────────────────────────────────────
+  function _renderRecentes(docs) {
+    if (!docs.length) return;
+    const sec    = document.getElementById('recentes-section');
+    const scroll = document.getElementById('recentes-scroll');
+    sec.style.display = '';
+    scroll.innerHTML = '';
+
+    docs.slice(0, 12).forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'recente-card';
+      card.onclick = () => _abrirDoc(d);
+      const isNovo = d.destaque === 'novo' || (d.data && _diasAtras(d.data) <= 14);
+      card.innerHTML = `
+        ${isNovo ? '<span class="recente-new-badge">NOVO</span>' : ''}
+        <p class="recente-card-tipo">${d.tipo || 'Documento'}</p>
+        <p class="recente-card-titulo">${d.titulo}</p>
+        <p class="recente-card-data">${_formatarData(d.data)}</p>`;
+      scroll.appendChild(card);
+    });
+  }
+
+  // ── Favoritos ─────────────────────────────────────────────────
+  function _renderFavoritos() {
+    const sec  = document.getElementById('favoritos-section');
+    const grid = document.getElementById('favoritos-grid');
+    const favsDocs = _todos.filter(d => _favoritos.has(d.id));
+
+    if (!favsDocs.length) { sec.style.display = 'none'; return; }
+    sec.style.display = '';
+    document.getElementById('favs-count').textContent = favsDocs.length + ' documento' + (favsDocs.length>1?'s':'');
+    grid.innerHTML = '';
+
+    favsDocs.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'fav-card';
+      card.innerHTML = `
+        <span class="fav-card-icon">${MIDIA_ICON[d.midia] || '📄'}</span>
+        <div class="fav-card-info" onclick="${d.link ? `window.open('${d.link}','_blank')` : ''}" style="cursor:${d.link?'pointer':'default'}">
+          <p class="fav-card-titulo">${d.titulo}</p>
+          <p class="fav-card-meta">${d.tipo||'Documento'} · ${d.ano||''}</p>
+        </div>
+        <button class="fav-remove" onclick="event.stopPropagation();_toggleFav('${d.id}',this)" title="Remover dos favoritos">★</button>`;
+      grid.appendChild(card);
+    });
+  }
+
+  async function _toggleFav(docId, btn) {
+    const eraStar = _favoritos.has(docId);
+    if (eraStar) _favoritos.delete(docId); else _favoritos.add(docId);
+
+    // Atualiza visual de todos os botões deste doc
+    document.querySelectorAll(`.doc-btn-fav[data-id="${docId}"]`).forEach(b => {
+      b.classList.toggle('ativo', !eraStar);
+      b.title = eraStar ? 'Adicionar aos favoritos' : 'Remover dos favoritos';
+    });
+
+    _renderFavoritos();
+
+    try { await Api.toggleFavorito(docId); } catch {}
+  }
+
+  // ── Filtros + busca ──────────────────────────────────────────
+  function _aplicarFiltros() {
+    _filtrados = _todos.filter(d => {
+      if (_catAtiva && d.tipo !== _catAtiva) return false;
+      if (_anoAtivo && !d.data?.startsWith(_anoAtivo)) return false;
+      if (_busca) {
+        const haystack = [d.titulo, d.tipo, d.descricao, d.ano].join(' ').toLowerCase();
+        if (!haystack.includes(_busca)) return false;
+      }
+      return true;
+    });
+
+    const label = _catAtiva ? `📄 ${_catAtiva}` : '📄 Todos os documentos';
+    document.getElementById('todos-label').textContent = label;
+    document.getElementById('docs-count').textContent = _filtrados.length + ' resultado' + (_filtrados.length !== 1 ? 's' : '');
+
+    _renderGrade(_filtrados);
+  }
+
+  // ── Grade principal ───────────────────────────────────────────
+  function _renderGrade(docs) {
+    const grid = document.getElementById('docs-grid');
+    grid.innerHTML = '';
+
+    if (!docs.length) {
+      grid.innerHTML = `
+        <div class="docs-empty">
+          <div class="docs-empty-icon">📭</div>
+          <p class="docs-empty-title">Nenhum documento encontrado</p>
+          <p style="font-size:13px">Tente outros termos ou remova os filtros.</p>
+        </div>`;
+      return;
+    }
+
+    docs.forEach((d, i) => {
+      const card = document.createElement('div');
+      card.className = 'doc-card';
+      card.style.animationDelay = Math.min(i * 30, 300) + 'ms';
+      card.role = 'listitem';
+
+      const dest   = d.destaque || 'none';
+      const isFav  = _favoritos.has(d.id);
+      const midia  = d.midia || 'pdf';
+      const btnLbl = midia === 'video' ? '▶️ Ver vídeo' : midia === 'link' ? '🔗 Abrir' : '📄 Abrir';
+
+      card.innerHTML = `
+        <div class="doc-destaque-bar ${dest}"></div>
+        <div class="doc-card-body">
+          <div class="doc-card-head">
+            <span class="doc-tipo-chip">${d.tipo || 'Documento'}</span>
+            ${dest !== 'none' ? `<span class="doc-destaque-chip ${dest}">${DESTAQUE_LABEL[dest]?.label || dest.toUpperCase()}</span>` : ''}
+          </div>
+          <p class="doc-titulo">${d.titulo}</p>
+          ${d.descricao ? `<p class="doc-desc">${d.descricao}</p>` : ''}
+        </div>
+        <div class="doc-card-footer">
+          <div class="doc-meta">
+            <span class="doc-ano">${d.ano || ''}</span>
+            ${d.data ? `<span class="doc-data">· ${_formatarData(d.data)}</span>` : ''}
+          </div>
+          <div class="doc-actions">
+            <button class="doc-btn-fav ${isFav?'ativo':''}" data-id="${d.id}"
+              onclick="_toggleFav('${d.id}',this)"
+              title="${isFav?'Remover dos favoritos':'Adicionar aos favoritos'}"
+              aria-label="Favoritar documento">★</button>
+            ${d.link
+              ? `<a href="${d.link}" target="_blank" rel="noopener noreferrer" class="doc-btn-open ${midia==='video'?'video':''}">${btnLbl}</a>`
+              : `<span class="doc-btn-open" style="opacity:.4;cursor:default">Sem link</span>`}
+          </div>
+        </div>`;
+
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Abrir doc (para cards clicáveis) ────────────────────────
+  function _abrirDoc(doc) {
+    if (doc.link) window.open(doc.link, '_blank', 'noopener,noreferrer');
+  }
+
+  // ── Utilitários ───────────────────────────────────────────────
+  function _formatarData(d) {
+    if (!d) return '';
+    try {
+      const dt = new Date(d + 'T12:00:00');
+      return dt.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+    } catch { return d; }
+  }
+
+  function _diasAtras(d) {
+    try { return Math.floor((Date.now() - new Date(d + 'T12:00:00').getTime()) / 86400000); } catch { return 999; }
+  }
+
+  // ── PWA Install ───────────────────────────────────────────────
+  function _initPWAInstall() {
+    let deferred = null;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault(); deferred = e;
+      setTimeout(() => document.getElementById('install-banner')?.classList.add('visible'), 6000);
+    });
+    document.getElementById('btn-install')?.addEventListener('click', async () => {
+      if (!deferred) return;
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      if (outcome === 'accepted') UI.toast('App instalado! 🎉', 'success');
+      deferred = null;
+      document.getElementById('install-banner')?.classList.remove('visible');
+    });
+    document.getElementById('btn-install-dismiss')?.addEventListener('click', () => {
+      document.getElementById('install-banner')?.classList.remove('visible');
+    });
+  }
+  </script>
 </body>
 </html>
