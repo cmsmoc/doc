@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil — CMS Montes Claros</title>
+  <meta name="theme-color" content="#0D2E5A">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    :root { --mod-primary:#1B6CB5; --mod-light:#DBEAFE; }
+    #navbar { background: var(--cms-navy); }
+
+    .page-wrap { max-width: 640px; margin: 0 auto; padding: var(--space-6); }
+
+    /* ── Card do perfil ── */
+    .profile-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-xl); overflow: hidden;
+      margin-bottom: var(--space-5);
+    }
+    .profile-card-header {
+      background: linear-gradient(135deg, var(--cms-navy) 0%, #1B4070 100%);
+      padding: var(--space-8) var(--space-6);
+      display: flex; align-items: center; gap: var(--space-5);
+      position: relative; overflow: hidden;
+    }
+    .profile-card-header::before {
+      content: ''; position: absolute; bottom: -60px; right: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,196,0,.12) 0%, transparent 65%);
+    }
+    .profile-big-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cms-blue), var(--cms-green));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 28px; font-weight: 900;
+      color: white; flex-shrink: 0;
+      border: 3px solid rgba(255,255,255,.25);
+      position: relative; z-index: 1;
+    }
+    .profile-header-info { z-index: 1; }
+    .profile-nome {
+      font-family: var(--font-display); font-size: var(--text-xl);
+      font-weight: 900; color: white; letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .profile-entidade { font-size: var(--text-sm); color: rgba(255,255,255,.55); }
+    .profile-perfil-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: var(--radius-full); padding: 3px 10px;
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: var(--cms-yellow);
+      margin-top: var(--space-2);
+    }
+
+    /* ── Dados ── */
+    .profile-data {
+      padding: var(--space-5) var(--space-6);
+    }
+    .data-row {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) 0; border-bottom: 1px solid var(--cms-border);
+    }
+    .data-row:last-child { border-bottom: none; }
+    .data-icon { font-size: 16px; width: 24px; flex-shrink: 0; text-align: center; }
+    .data-label { font-size: 11px; font-weight: 600; color: var(--cms-muted); width: 100px; flex-shrink: 0; }
+    .data-value { font-size: var(--text-sm); color: var(--cms-ink); flex: 1; }
+
+    /* ── Comissões ── */
+    .section-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-xl); overflow: hidden;
+      margin-bottom: var(--space-5);
+    }
+    .section-card-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--cms-border);
+      display: flex; align-items: center; gap: var(--space-3);
+    }
+    .section-card-title {
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--cms-blue);
+    }
+    .section-card-body { padding: var(--space-4) var(--space-5); }
+
+    .comissao-chip {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) 0; border-bottom: 1px solid var(--cms-border);
+      text-decoration: none; cursor: pointer;
+    }
+    .comissao-chip:last-child { border-bottom: none; }
+    .comissao-chip-icon {
+      width: 36px; height: 36px; border-radius: var(--radius-md);
+      background: var(--mod-light); display: flex; align-items: center;
+      justify-content: center; font-size: 16px; flex-shrink: 0;
+    }
+    .comissao-chip-nome { font-weight: 700; color: var(--cms-navy); font-size: var(--text-sm); }
+    .comissao-chip-funcao { font-size: 11px; color: var(--cms-muted); }
+    .comissao-chip-arrow { margin-left: auto; color: var(--cms-muted); font-size: 14px; }
+
+    /* ── Ações ── */
+    .actions-list { display: flex; flex-direction: column; gap: var(--space-3); }
+    .action-item {
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: var(--space-4); background: var(--cms-off);
+      border-radius: var(--radius-lg); text-decoration: none;
+      cursor: pointer; border: 1.5px solid transparent;
+      transition: all var(--transition-fast);
+    }
+    .action-item:hover { border-color: var(--cms-blue); background: white; }
+    .action-icon { font-size: 22px; }
+    .action-label { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--cms-navy); }
+    .action-desc  { font-size: 12px; color: var(--cms-muted); }
+    .action-arrow { margin-left: auto; color: var(--cms-muted); font-size: 14px; }
+    .action-item.danger .action-label { color: #DC2626; }
+    .action-item.danger:hover { border-color: #DC2626; }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="loading-logo">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando perfil</p>
+  </div>
+  <div id="toast-container" aria-live="polite"></div>
+
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="navbar-logo">
+      <div class="navbar-title">Meu <span>Perfil</span></div>
+    </div>
+    <div class="navbar-actions">
+      <button class="navbar-btn" onclick="location.href='home.html'">← Início</button>
+      <button class="navbar-btn" id="btn-logout">⎋</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+
+    <!-- Cartão principal -->
+    <div class="profile-card">
+      <div class="profile-card-header">
+        <div class="profile-big-avatar" id="profile-avatar">??</div>
+        <div class="profile-header-info">
+          <p class="profile-nome"    id="profile-nome">Carregando...</p>
+          <p class="profile-entidade" id="profile-entidade"></p>
+          <span class="profile-perfil-badge" id="profile-badge">conselheiro</span>
+        </div>
+      </div>
+      <div class="profile-data">
+        <div class="data-row">
+          <span class="data-icon">🏷️</span>
+          <span class="data-label">Cadeira</span>
+          <span class="data-value" id="d-cadeira">—</span>
+        </div>
+        <div class="data-row">
+          <span class="data-icon">🏢</span>
+          <span class="data-label">Segmento</span>
+          <span class="data-value" id="d-segmento">—</span>
+        </div>
+        <div class="data-row">
+          <span class="data-icon">✉️</span>
+          <span class="data-label">E-mail</span>
+          <span class="data-value" id="d-email">—</span>
+        </div>
+        <div class="data-row">
+          <span class="data-icon">🕐</span>
+          <span class="data-label">Último acesso</span>
+          <span class="data-value" id="d-ultimo">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comissões -->
+    <div class="section-card" id="sec-comissoes" style="display:none">
+      <div class="section-card-header">
+        <span style="font-size:16px">🏛️</span>
+        <span class="section-card-title">Minhas comissões</span>
+      </div>
+      <div class="section-card-body" id="comissoes-lista"></div>
+    </div>
+
+    <!-- Favoritos recentes -->
+    <div class="section-card" id="sec-favs" style="display:none">
+      <div class="section-card-header">
+        <span style="font-size:16px">⭐</span>
+        <span class="section-card-title">Favoritos</span>
+      </div>
+      <div class="section-card-body" id="favs-lista"></div>
+    </div>
+
+    <!-- Ações -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <span style="font-size:16px">⚙️</span>
+        <span class="section-card-title">Conta</span>
+      </div>
+      <div class="section-card-body">
+        <div class="actions-list">
+          <a class="action-item" href="change-password.html">
+            <span class="action-icon">🔑</span>
+            <div><p class="action-label">Alterar senha</p><p class="action-desc">Trocar a senha de acesso ao sistema</p></div>
+            <span class="action-arrow">→</span>
+          </a>
+          <a class="action-item" href="meus-documentos.html">
+            <span class="action-icon">📁</span>
+            <div><p class="action-label">Meus documentos</p><p class="action-desc">Declarações e documentos vinculados ao seu mandato</p></div>
+            <span class="action-arrow">→</span>
+          </a>
+          <a class="action-item" href="solicitacoes.html">
+            <span class="action-icon">📨</span>
+            <div><p class="action-label">Minhas solicitações</p><p class="action-desc">Acompanhar solicitações enviadas à Diretoria</p></div>
+            <span class="action-arrow">→</span>
+          </a>
+          <div class="action-item danger" onclick="confirmarLogout()">
+            <span class="action-icon">⎋</span>
+            <div><p class="action-label">Sair do sistema</p><p class="action-desc">Encerrar esta sessão</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      Auth.requireAuth();
+      UI.init();
+      const session = Auth.getSession();
+
+      document.getElementById('btn-logout').addEventListener('click', confirmarLogout);
+
+      // Preenche com dados da sessão imediatamente
+      const iniciais = _iniciais(session.nome);
+      document.getElementById('profile-avatar').textContent   = iniciais;
+      document.getElementById('profile-nome').textContent     = session.nome;
+      document.getElementById('profile-entidade').textContent = session.entidade || '';
+      document.getElementById('profile-badge').textContent    = session.perfil || 'conselheiro';
+      document.getElementById('d-cadeira').textContent  = session.cadeira  || '—';
+      document.getElementById('d-segmento').textContent = session.segmento || '—';
+      document.getElementById('d-email').textContent    = session.email    || '—';
+
+      // Carrega dados adicionais do servidor
+      const [minhasComissoes, favoritos] = await Promise.all([
+        Api.getMinhasComissoes().catch(() => []),
+        Api.getFavoritos().catch(() => []),
+      ]);
+
+      // Comissões
+      if (minhasComissoes.length) {
+        const sec   = document.getElementById('sec-comissoes');
+        const lista = document.getElementById('comissoes-lista');
+        sec.style.display = '';
+        minhasComissoes.forEach(c => {
+          const div = document.createElement('a');
+          div.className = 'comissao-chip';
+          div.href = 'comissoes.html#' + c.id;
+          div.innerHTML = `
+            <div class="comissao-chip-icon">${c.tipo === 'camara' ? '🔬' : '🏛️'}</div>
+            <div>
+              <p class="comissao-chip-nome">${c.sigla || c.nome.substring(0, 40)}</p>
+              <p class="comissao-chip-funcao">${c.funcao === 'coordenador' ? '⭐ Coordenador(a)' : 'Membro'}</p>
+            </div>
+            <span class="comissao-chip-arrow">→</span>`;
+          lista.appendChild(div);
+        });
+      }
+
+      // Favoritos
+      if (favoritos.length) {
+        const sec   = document.getElementById('sec-favs');
+        const lista = document.getElementById('favs-lista');
+        sec.style.display = '';
+        favoritos.slice(0, 5).forEach(f => {
+          const a = document.createElement('a');
+          a.className = 'comissao-chip';
+          a.href = f.link || '#';
+          if (f.link) { a.target = '_blank'; a.rel = 'noopener'; }
+          a.innerHTML = `
+            <div class="comissao-chip-icon">📄</div>
+            <div>
+              <p class="comissao-chip-nome">${f.titulo}</p>
+              <p class="comissao-chip-funcao">${f.tipo || 'Documento'} · ${f.ano || ''}</p>
+            </div>
+            <span class="comissao-chip-arrow">→</span>`;
+          lista.appendChild(a);
+        });
+      }
+
+      UI.hideLoadingScreen();
+    });
+
+    function confirmarLogout() {
+      if (confirm('Deseja sair do sistema?')) Auth.logout();
+    }
+
+    function _iniciais(nome) {
+      if (!nome) return '?';
+      const p = nome.trim().split(' ').filter(Boolean);
+      return ((p[0]?.[0] || '') + (p[p.length - 1]?.[0] || '')).toUpperCase();
+    }
+  </script>
+</body>
+</html>

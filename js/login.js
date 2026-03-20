@@ -1,127 +1,73 @@
 /**
- * login.js — Lógica da tela de login
- * ─────────────────────────────────────────────
- * Gerencia o formulário de login, carregamento
- * da lista de conselheiros e validação.
- *
- * Secretaria Executiva CMS-MOC | Versão 1.0
+ * login.js — CMS Docs PWA v3
+ * MUDANÇA v3: redireciona para home.html (CONFIG.APP.HOME_PAGE)
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Se já está logado, vai direto para home
+  if (Auth.isAuthenticated()) {
+    location.replace(CONFIG.APP.HOME_PAGE || 'home.html');
+    return;
+  }
 
-  // Se já logado, vai para o dashboard
-  Auth.redirectIfLogged();
-
-  // Referências do DOM
-  const form        = document.getElementById('login-form');
-  const selConselho = document.getElementById('select-conselheiro');
-  const inputSenha  = document.getElementById('input-senha');
-  const btnLogin    = document.getElementById('btn-login');
-  const togglePwd   = document.getElementById('toggle-password');
-  const errorMsg    = document.getElementById('login-error');
-
-  // ── Carrega lista de conselheiros ─────────────────────────
+  UI.init();
   await _loadConselheiros();
 
-  // ── Eventos ───────────────────────────────────────────────
-
-  // Toggle visibilidade da senha
-  if (togglePwd) {
-    togglePwd.addEventListener('click', () => {
-      const isText = inputSenha.type === 'text';
-      inputSenha.type     = isText ? 'password' : 'text';
-      togglePwd.textContent = isText ? '👁' : '🙈';
-    });
-  }
-
-  // Limpa erros ao digitar
-  selConselho?.addEventListener('change', _clearErrors);
-  inputSenha?.addEventListener('input',   _clearErrors);
-
-  // Submissão do formulário
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await _handleLogin();
+  document.getElementById('login-form')?.addEventListener('submit', _handleSubmit);
+  document.getElementById('senha')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') _handleSubmit(e);
   });
-
-  // Oculta loading screen
-  UI.hideLoadingScreen();
-
-  // ── Funções internas ──────────────────────────────────────
-
-  async function _loadConselheiros() {
-    try {
-      const list = await Api.getConselheiros();
-      UI.populateConselheirosSelect(list);
-    } catch (err) {
-      console.warn('[Login] Erro ao carregar conselheiros:', err);
-      // Fallback: campo de texto livre
-      _fallbackToTextInput();
-    }
-  }
-
-  function _fallbackToTextInput() {
-    if (!selConselho) return;
-    const input = document.createElement('input');
-    input.type        = 'text';
-    input.id          = 'select-conselheiro';
-    input.className   = 'form-control';
-    input.placeholder = 'Digite seu nome completo';
-    input.required    = true;
-    selConselho.replaceWith(input);
-  }
-
-  async function _handleLogin() {
-    const nome  = document.getElementById('select-conselheiro')?.value?.trim();
-    const senha = inputSenha?.value?.trim();
-
-    // Validação básica no frontend
-    if (!nome) {
-      _showError('Selecione seu nome para continuar.');
-      document.getElementById('select-conselheiro')?.classList.add('error');
-      return;
-    }
-    if (!senha || senha.length < 3) {
-      _showError('Informe sua senha.');
-      inputSenha?.classList.add('error');
-      return;
-    }
-
-    // Estado de carregamento no botão
-    _setLoading(true);
-
-    const result = await Auth.login(nome, senha);
-
-    if (result.ok) {
-      UI.toast('Login realizado com sucesso!', 'success');
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 600);
-    } else {
-      _setLoading(false);
-      _showError(result.message || 'Credenciais inválidas. Tente novamente.');
-      inputSenha?.classList.add('error');
-    }
-  }
-
-  function _showError(msg) {
-    if (!errorMsg) return;
-    errorMsg.textContent = msg;
-    errorMsg.classList.remove('hidden');
-  }
-
-  function _clearErrors() {
-    errorMsg?.classList.add('hidden');
-    document.getElementById('select-conselheiro')?.classList.remove('error');
-    inputSenha?.classList.remove('error');
-  }
-
-  function _setLoading(loading) {
-    if (!btnLogin) return;
-    btnLogin.disabled = loading;
-    btnLogin.innerHTML = loading
-      ? `<span class="btn-spinner"></span> Verificando...`
-      : `Entrar`;
-  }
-
 });
+
+let _conselheiros = [];
+
+async function _loadConselheiros() {
+  const sel = document.getElementById('nome');
+  if (!sel) return;
+
+  sel.innerHTML = '<option value="">Carregando...</option>';
+  sel.disabled = true;
+
+  try {
+    _conselheiros = await Api.getConselheiros();
+
+    sel.innerHTML = '<option value="">Selecione seu nome</option>';
+    _conselheiros
+      .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+      .forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.nome;
+        opt.textContent = c.nome;
+        sel.appendChild(opt);
+      });
+
+    sel.disabled = false;
+    sel.focus();
+  } catch (e) {
+    sel.innerHTML = '<option value="">Erro ao carregar — verifique a conexão</option>';
+    console.error('[Login] Erro ao carregar conselheiros:', e);
+  }
+}
+
+async function _handleSubmit(e) {
+  e?.preventDefault();
+
+  const nome  = (document.getElementById('nome')?.value  || '').trim();
+  const senha = (document.getElementById('senha')?.value || '').trim();
+
+  if (!nome)  { UI.mostrarErroLogin('Selecione seu nome.'); return; }
+  if (!senha) { UI.mostrarErroLogin('Informe a senha.');    return; }
+
+  const btn = document.getElementById('btn-login');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="btn-spinner"></span> Entrando...'; }
+
+  const result = await Api.login(nome, senha);
+
+  if (result.ok) {
+    // Redireciona para a home configurável
+    location.replace(CONFIG.APP.HOME_PAGE || 'home.html');
+  } else {
+    if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+    UI.mostrarErroLogin(result.message || 'Nome ou senha incorretos.');
+  }
+}

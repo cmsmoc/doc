@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS Montes Claros</title>
+  <meta name="theme-color" content="#0D2E5A">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ══════════════════════════════════════════
+       HOME v3 — PORTAL INSTITUCIONAL
+       ══════════════════════════════════════════ */
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--cms-navy);
+      position: relative; overflow: hidden;
+      padding: var(--space-8) var(--space-6) var(--space-7);
+    }
+    .hero::before {
+      content: ''; position: absolute; bottom: -100px; right: -100px;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,196,0,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+    /* Avatar + saudação */
+    .hero-user {
+      display: flex; align-items: center; gap: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .hero-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cms-blue), var(--cms-green));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 18px; font-weight: 900;
+      color: white; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.2);
+      cursor: pointer; transition: transform var(--transition-fast);
+    }
+    .hero-avatar:hover { transform: scale(1.05); }
+    .hero-user-info {}
+    .hero-greeting { font-size: var(--text-xs); color: rgba(255,255,255,.5); margin-bottom: 2px; }
+    .hero-name {
+      font-family: var(--font-display); font-size: var(--text-lg);
+      font-weight: 800; color: white; letter-spacing: -0.5px;
+    }
+    .hero-role { font-size: var(--text-xs); color: rgba(255,255,255,.45); margin-top: 2px; }
+
+    /* Título institucional */
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 4vw, 30px);
+      font-weight: 900; color: white;
+      letter-spacing: -0.8px; line-height: 1.1;
+      margin-bottom: var(--space-2);
+    }
+    .hero-title em { color: var(--cms-yellow); font-style: normal; }
+    .hero-subtitle { font-size: var(--text-sm); color: rgba(255,255,255,.5); line-height: 1.6; }
+
+    /* Texto institucional configurável */
+    .hero-msg {
+      margin-top: var(--space-5);
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-left: 3px solid var(--cms-yellow);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-sm); color: rgba(255,255,255,.7);
+      line-height: 1.65; display: none;
+    }
+    .hero-msg.active { display: block; }
+
+    /* ── Conteúdo ── */
+    .home-wrap { max-width: 700px; margin: 0 auto; padding: var(--space-6); }
+
+    /* ── Seção ── */
+    .home-section { margin-bottom: var(--space-7); }
+    .home-section-header {
+      display: flex; align-items: center; gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .home-section-icon { font-size: 18px; }
+    .home-section-title {
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--cms-blue);
+      flex: 1;
+    }
+    .home-section-header::after {
+      content: ''; flex: 1; height: 1px; background: var(--cms-border);
+    }
+
+    /* ── Avisos ── */
+    .aviso-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5);
+      margin-bottom: var(--space-3); border-left: 4px solid var(--cms-blue);
+      transition: box-shadow var(--transition-fast);
+    }
+    .aviso-card:hover { box-shadow: var(--shadow-sm); }
+    .aviso-card.green  { border-left-color: var(--cms-green); }
+    .aviso-card.yellow { border-left-color: var(--cms-yellow); }
+    .aviso-card.red    { border-left-color: #DC2626; }
+    .aviso-titulo { font-weight: 700; color: var(--cms-navy); font-size: var(--text-sm); margin-bottom: 4px; }
+    .aviso-texto  { font-size: var(--text-sm); color: var(--cms-muted); line-height: 1.6; }
+
+    /* ── Atas pendentes ── */
+    .pendentes-wrap {
+      background: white; border: 2px solid var(--cms-yellow);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-5);
+      display: none;
+    }
+    .pendentes-wrap.active { display: block; }
+    .pendentes-header {
+      background: var(--cms-yellow); padding: var(--space-3) var(--space-5);
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .pendentes-header h3 {
+      font-family: var(--font-display); font-size: var(--text-sm);
+      font-weight: 800; color: var(--cms-navy);
+    }
+    .pendente-item {
+      padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--cms-border);
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+    }
+    .pendente-item:last-child { border-bottom: none; }
+
+    /* ── Acesso rápido ── */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: var(--space-3);
+    }
+    .quick-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-5) var(--space-4);
+      text-align: center; text-decoration: none;
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+      transition: all var(--transition-base); position: relative; overflow: hidden;
+    }
+    .quick-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--cms-blue); transform: scaleX(0); transition: transform var(--transition-base);
+      transform-origin: left;
+    }
+    .quick-card:hover { border-color: var(--cms-blue); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .quick-card:hover::before { transform: scaleX(1); }
+    .quick-icon { font-size: 26px; }
+    .quick-label {
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      color: var(--cms-navy); letter-spacing: .3px;
+    }
+    .quick-badge {
+      position: absolute; top: 8px; right: 8px;
+      background: #DC2626; color: white;
+      border-radius: var(--radius-full); font-size: 10px; font-weight: 700;
+      padding: 1px 5px; font-family: var(--font-display);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+    /* ── Formação ── */
+    .formacao-card {
+      background: linear-gradient(135deg, var(--cms-navy) 0%, #143060 100%);
+      border-radius: var(--radius-xl); padding: var(--space-6);
+      display: flex; align-items: center; gap: var(--space-5);
+      text-decoration: none; transition: transform var(--transition-base);
+      position: relative; overflow: hidden;
+    }
+    .formacao-card::after {
+      content: ''; position: absolute; right: -40px; top: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,196,0,.12) 0%, transparent 65%);
+    }
+    .formacao-card:hover { transform: translateY(-2px); }
+    .formacao-icon { font-size: 36px; flex-shrink: 0; z-index: 1; }
+    .formacao-text { z-index: 1; }
+    .formacao-eyebrow {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--cms-yellow);
+      margin-bottom: 4px;
+    }
+    .formacao-title {
+      font-family: var(--font-display); font-size: var(--text-lg);
+      font-weight: 900; color: white; margin-bottom: 4px;
+    }
+    .formacao-desc { font-size: var(--text-sm); color: rgba(255,255,255,.55); line-height: 1.5; }
+    .formacao-arrow {
+      margin-left: auto; font-size: 20px; color: var(--cms-yellow);
+      flex-shrink: 0; z-index: 1;
+    }
+
+    /* ── Push notifications ── */
+    .push-card {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      display: flex; align-items: center; gap: var(--space-4);
+    }
+    .push-icon { font-size: 28px; flex-shrink: 0; }
+    .push-info { flex: 1; }
+    .push-title { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--cms-navy); margin-bottom: 3px; }
+    .push-desc  { font-size: 12px; color: var(--cms-muted); }
+    .push-btn {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: .3px; border: none; cursor: pointer;
+      transition: all var(--transition-fast); white-space: nowrap;
+    }
+    .push-btn.inactive { background: var(--cms-blue); color: white; }
+    .push-btn.inactive:hover { background: #1558A0; }
+    .push-btn.active { background: var(--cms-lg, #D1FAE5); color: #065F46; }
+    .push-btn.pending { background: var(--cms-off); color: var(--cms-muted); cursor: default; }
+
+    /* ── Popup ── */
+    .popup-overlay {
+      position: fixed; inset: 0; background: rgba(13,46,90,.65);
+      backdrop-filter: blur(4px); z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      padding: var(--space-6);
+    }
+    .popup-box {
+      background: white; border-radius: var(--radius-xl);
+      padding: var(--space-8); max-width: 420px; width: 100%;
+      box-shadow: var(--shadow-lg); animation: slideUp .3s ease;
+    }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .popup-eyebrow {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--cms-blue);
+      margin-bottom: var(--space-2);
+    }
+    .popup-title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 900; color: var(--cms-navy); margin-bottom: var(--space-3); }
+    .popup-text  { font-size: var(--text-sm); color: var(--cms-muted); line-height: 1.7; margin-bottom: var(--space-6); }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div id="loading-screen">
+    <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="loading-logo">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando</p>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+  <div id="offline-banner"><span>📶</span><span>Modo offline</span></div>
+
+  <!-- Popup de aviso -->
+  <div id="popup-aviso" class="popup-overlay hidden" role="dialog" aria-modal="true">
+    <div class="popup-box">
+      <p class="popup-eyebrow">Aviso institucional</p>
+      <h2 class="popup-title" id="popup-titulo"></h2>
+      <p class="popup-text"  id="popup-texto"></p>
+      <button class="btn btn-navy btn-full" onclick="fecharPopup()">Entendi</button>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="navbar-brand">
+      <img src="https://i.ibb.co/HLG4tvfn/LOGOTIPO-CONSELHO-BRANCO.png" alt="CMS" class="navbar-logo">
+      <div class="navbar-title">CMS <span>Montes Claros</span></div>
+    </div>
+    <div class="navbar-actions">
+      <div class="navbar-user" id="navbar-user"></div>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" onclick="location.href='perfil.html'" title="Meu perfil">👤</button>
+      <button class="navbar-btn" onclick="location.href='change-password.html'" title="Alterar senha">🔑</button>
+      <button class="navbar-btn" id="btn-logout" title="Sair">⎋</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-user">
+        <div class="hero-avatar" id="hero-avatar" onclick="location.href='perfil.html'" title="Meu perfil">??</div>
+        <div class="hero-user-info">
+          <p class="hero-greeting">Bem-vindo(a) de volta</p>
+          <p class="hero-name"  id="hero-name">Carregando...</p>
+          <p class="hero-role"  id="hero-role"></p>
+        </div>
+      </div>
+      <h1 class="hero-title" id="hero-title">Conselho Municipal<br>de <em>Saúde</em></h1>
+      <p class="hero-subtitle" id="hero-subtitle">Montes Claros — MG</p>
+      <div class="hero-msg" id="hero-msg"></div>
+    </div>
+  </div>
+
+  <!-- Conteúdo -->
+  <div class="home-wrap">
+
+    <!-- Atas pendentes (condicional) -->
+    <div id="pendentes-section" class="pendentes-wrap">
+      <div class="pendentes-header">
+        <span>⚠️</span>
+        <h3 id="pendentes-titulo">Atas aguardando sua aprovação</h3>
+      </div>
+      <div id="pendentes-lista"></div>
+    </div>
+
+    <!-- AVISOS -->
+    <div class="home-section" id="section-avisos" style="display:none">
+      <div class="home-section-header">
+        <span class="home-section-icon">📢</span>
+        <span class="home-section-title">Avisos</span>
+      </div>
+      <div id="avisos-lista"></div>
+    </div>
+
+    <!-- ACESSO RÁPIDO -->
+    <div class="home-section">
+      <div class="home-section-header">
+        <span class="home-section-icon">⚡</span>
+        <span class="home-section-title">Acesso rápido</span>
+      </div>
+      <div class="quick-grid" id="quick-grid"></div>
+    </div>
+
+    <!-- FORMAÇÃO -->
+    <div class="home-section" id="section-formacao" style="display:none">
+      <div class="home-section-header">
+        <span class="home-section-icon">🎓</span>
+        <span class="home-section-title">Formação</span>
+      </div>
+      <a id="formacao-link" href="#" target="_blank" rel="noopener" class="formacao-card">
+        <span class="formacao-icon">🎓</span>
+        <div class="formacao-text">
+          <p class="formacao-eyebrow">Capacitação</p>
+          <p class="formacao-title" id="formacao-titulo">Portal de Formação</p>
+          <p class="formacao-desc"  id="formacao-desc">Acesse os materiais de formação para conselheiros.</p>
+        </div>
+        <span class="formacao-arrow">→</span>
+      </a>
+    </div>
+
+    <!-- NOTIFICAÇÕES PUSH -->
+    <div class="home-section" id="section-push">
+      <div class="home-section-header">
+        <span class="home-section-icon">🔔</span>
+        <span class="home-section-title">Notificações</span>
+      </div>
+      <div class="push-card">
+        <span class="push-icon">🔔</span>
+        <div class="push-info">
+          <p class="push-title">Avisos oficiais no celular</p>
+          <p class="push-desc" id="push-desc">Receba convocações e avisos urgentes diretamente no seu dispositivo.</p>
+        </div>
+        <button class="push-btn inactive" id="btn-push" onclick="togglePush()">Ativar</button>
+      </div>
+    </div>
+
+  </div><!-- /home-wrap -->
+
+  <!-- PWA Install banner -->
+  <div id="install-banner">
+    <div class="install-banner-text">
+      <img src="https://i.ibb.co/4g2ZZyGZ/iconcms1.png" class="install-banner-icon" alt="">
+      <div class="install-banner-info">
+        <h4>Instalar CMS Docs</h4>
+        <p>Acesso rápido pelo celular</p>
+      </div>
+    </div>
+    <div class="install-banner-actions">
+      <button id="btn-install-dismiss" class="btn btn-ghost btn-sm">Agora não</button>
+      <button id="btn-install"          class="btn btn-primary btn-sm">Instalar</button>
+    </div>
+  </div>
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/manutencao.js"></script>
+
+  <!-- OneSignal SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <script>
+  // ══════════════════════════════════════════════════════════
+  // HOME v3 — lógica principal
+  // ══════════════════════════════════════════════════════════
+
+  // Módulos disponíveis por perfil mínimo
+  const MODULOS = [
+    { key:'documentos',  label:'Documentos',  icon:'📄', href:'index.html',           perfilMin:'publico'   },
+    { key:'atas',        label:'Atas',         icon:'📋', href:'atas.html',            perfilMin:'publico'   },
+    { key:'reunioes',    label:'Reuniões',     icon:'🗓️', href:'reunioes.html',         perfilMin:'publico'   },
+    { key:'comissoes',   label:'Comissões',    icon:'🏛️', href:'comissoes.html',        perfilMin:'publico'   },
+    { key:'meusdocs',    label:'Meus Docs',    icon:'👤', href:'meus-documentos.html', perfilMin:'publico'   },
+    { key:'solicitacoes',label:'Solicitações', icon:'📨', href:'solicitacoes.html',    perfilMin:'publico'   },
+    { key:'diretoria',   label:'Diretoria',    icon:'🏛️', href:'diretoria.html',       perfilMin:'diretoria' },
+    { key:'presidente',  label:'Presidência',  icon:'⭐', href:'presidente.html',      perfilMin:'presidente'},
+  ];
+
+  const HIERARQUIA = ['publico','diretoria','presidente','secretaria','admin'];
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    Auth.requireAuth();
+    const session = Auth.getSession();
+    UI.init();
+
+    // Navbar
+    document.getElementById('navbar-user').innerHTML =
+      `<div class="navbar-avatar" id="nav-avatar">${_iniciais(session.nome)}</div>
+       <span class="navbar-name">${session.nome.split(' ')[0]}</span>`;
+
+    // Hero
+    document.getElementById('hero-avatar').textContent = _iniciais(session.nome);
+    document.getElementById('hero-name').textContent   = session.nome;
+    document.getElementById('hero-role').textContent   = session.entidade || session.segmento || '';
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (confirm('Sair do sistema?')) Auth.logout();
+    });
+
+    // Carrega tudo em paralelo
+    const [config, avisos, pendentes, modStatus] = await Promise.all([
+      Api.getHomeConfig().catch(() => ({})),
+      Api.getAvisos().catch(() => []),
+      Api.getAtasPendentes().catch(() => []),
+      Api.getModulosStatus().catch(() => ({})),
+    ]);
+
+    // Aplica config da home
+    _aplicarConfig(config);
+
+    // Avisos
+    _renderAvisos(avisos, modStatus);
+
+    // Atas pendentes
+    _renderPendentes(pendentes);
+
+    // Acesso rápido
+    _renderQuickGrid(session, modStatus);
+
+    // Formação
+    _renderFormacao(config);
+
+    // Push
+    _initPush(session);
+
+    // PWA install
+    _initPWAInstall();
+
+    // Popup (primeiro aviso do tipo popup)
+    const popup = avisos.find(a => a.tipo === 'popup');
+    if (popup) _mostrarPopup(popup);
+
+    UI.hideLoadingScreen();
+
+    window.addEventListener('offline', () => UI.setOffline(true));
+    window.addEventListener('online',  () => UI.setOffline(false));
+    if (!navigator.onLine) UI.setOffline(true);
+  });
+
+  // ── Config ──────────────────────────────────────────────────
+  function _aplicarConfig(cfg) {
+    if (cfg.home_titulo)    document.getElementById('hero-title').innerHTML    = cfg.home_titulo;
+    if (cfg.home_subtitulo) document.getElementById('hero-subtitle').textContent = cfg.home_subtitulo;
+    if (cfg.home_texto) {
+      const el = document.getElementById('hero-msg');
+      el.textContent = cfg.home_texto;
+      el.classList.add('active');
+    }
+  }
+
+  // ── Avisos ──────────────────────────────────────────────────
+  function _renderAvisos(avisos, modStatus) {
+    const banners = avisos.filter(a => a.tipo === 'banner');
+    const sec = document.getElementById('section-avisos');
+    const lista = document.getElementById('avisos-lista');
+
+    if (!banners.length) return;
+    sec.style.display = '';
+    banners.forEach(a => {
+      const div = document.createElement('div');
+      div.className = `aviso-card ${a.cor || 'blue'}`;
+      div.innerHTML = `<p class="aviso-titulo">${a.titulo}</p>
+                       <p class="aviso-texto">${a.texto}</p>`;
+      lista.appendChild(div);
+    });
+  }
+
+  // ── Atas pendentes ───────────────────────────────────────────
+  function _renderPendentes(pendentes) {
+    if (!pendentes.length) return;
+    const sec   = document.getElementById('pendentes-section');
+    const lista = document.getElementById('pendentes-lista');
+    document.getElementById('pendentes-titulo').textContent =
+      pendentes.length + ' ata' + (pendentes.length > 1 ? 's' : '') + ' aguardando sua aprovação';
+    sec.classList.add('active');
+
+    pendentes.forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'pendente-item';
+      div.innerHTML = `
+        <div>
+          <div style="font-weight:700;color:var(--cms-navy);font-size:13px">${a.numero} — ${a.tipo}</div>
+          <div style="font-size:12px;color:var(--cms-muted)">${_fmt(a.data)}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          ${a.link_pdf ? `<a href="${a.link_pdf}" target="_blank" class="btn btn-ghost btn-sm">PDF</a>` : ''}
+          <button class="btn btn-primary btn-sm" onclick="aprovarAta('${a.id}',this)">Aprovar ✓</button>
+        </div>`;
+      lista.appendChild(div);
+    });
+  }
+
+  // ── Quick grid ───────────────────────────────────────────────
+  function _renderQuickGrid(session, modStatus) {
+    const grid  = document.getElementById('quick-grid');
+    const nivel = HIERARQUIA.indexOf(session.perfil || 'publico');
+
+    MODULOS.forEach(m => {
+      // Verifica hierarquia
+      if (HIERARQUIA.indexOf(m.perfilMin) > nivel) return;
+      // Verifica status do módulo
+      const st = modStatus[m.key]?.status || 'ativo';
+      if (st === 'inativo') return;
+
+      const a = document.createElement('a');
+      a.href = m.href;
+      a.className = 'quick-card';
+      a.innerHTML = `
+        <span class="quick-icon">${m.icon}</span>
+        <span class="quick-label">${m.label}</span>
+        ${st === 'manutencao' ? '<span class="quick-badge" style="background:#D97706">!</span>' : ''}`;
+      grid.appendChild(a);
+    });
+  }
+
+  // ── Formação ─────────────────────────────────────────────────
+  function _renderFormacao(cfg) {
+    if (!cfg.formacao_url) return;
+    const sec = document.getElementById('section-formacao');
+    sec.style.display = '';
+    document.getElementById('formacao-link').href  = cfg.formacao_url;
+    document.getElementById('formacao-titulo').textContent = cfg.formacao_titulo || 'Portal de Formação';
+    document.getElementById('formacao-desc').textContent   = cfg.formacao_desc   || 'Acesse os materiais de capacitação para conselheiros.';
+  }
+
+  // ── Push Notifications ───────────────────────────────────────
+  const PUSH_KEY = 'cms_push_state'; // 'inactive' | 'active' | 'denied'
+
+  function _initPush(session) {
+    const state = localStorage.getItem(PUSH_KEY) || 'inactive';
+    _atualizarBtnPush(state);
+
+    // OneSignal init (só se a chave estiver configurada no CONFIG)
+    const appId = CONFIG.ONESIGNAL_APP_ID;
+    if (!appId || appId === 'SEU_APP_ID_AQUI') {
+      document.getElementById('section-push').style.display = 'none';
+      return;
+    }
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async (OneSignal) => {
+      await OneSignal.init({
+        appId,
+        safari_web_id: CONFIG.ONESIGNAL_SAFARI_ID || undefined,
+        notifyButton: { enable: false }, // usamos nosso próprio botão
+        allowLocalhostAsSecureOrigin: true,
+      });
+
+      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+      if (isSubscribed) {
+        localStorage.setItem(PUSH_KEY, 'active');
+        _atualizarBtnPush('active');
+      }
+    });
+  }
+
+  function _atualizarBtnPush(state) {
+    const btn  = document.getElementById('btn-push');
+    const desc = document.getElementById('push-desc');
+    if (!btn) return;
+    const map = {
+      inactive: { cls:'inactive', txt:'🔔 Ativar avisos',    desc:'Receba convocações e avisos urgentes no seu celular.' },
+      active:   { cls:'active',   txt:'✅ Ativado',          desc:'Você receberá os avisos oficiais do Conselho.' },
+      denied:   { cls:'pending',  txt:'🔕 Bloqueado',        desc:'Você bloqueou as notificações. Ative nas configurações do navegador.' },
+      pending:  { cls:'pending',  txt:'...',                 desc:'Aguardando permissão...' },
+    };
+    const s = map[state] || map.inactive;
+    btn.className  = 'push-btn ' + s.cls;
+    btn.textContent = s.txt;
+    if (desc) desc.textContent = s.desc;
+  }
+
+  async function togglePush() {
+    const state = localStorage.getItem(PUSH_KEY) || 'inactive';
+
+    if (state === 'active') {
+      // Desativar
+      if (window.OneSignal) {
+        await window.OneSignal.User.PushSubscription.optOut();
+        await Api.removerPushSubscription();
+      }
+      localStorage.setItem(PUSH_KEY, 'inactive');
+      _atualizarBtnPush('inactive');
+      UI.toast('Notificações desativadas.', 'info');
+      return;
+    }
+
+    if (state === 'denied') {
+      UI.toast('Você bloqueou notificações. Ative nas configurações do navegador.', 'error');
+      return;
+    }
+
+    // Ativar
+    _atualizarBtnPush('pending');
+    try {
+      if (!window.OneSignal) throw new Error('OneSignal não carregado.');
+
+      await window.OneSignal.User.PushSubscription.optIn();
+      const permission = await window.OneSignal.Notifications.permission;
+
+      if (!permission) {
+        localStorage.setItem(PUSH_KEY, 'denied');
+        _atualizarBtnPush('denied');
+        return;
+      }
+
+      const userId = await window.OneSignal.User.onesignalId;
+      if (userId) await Api.salvarPushSubscription(userId);
+
+      localStorage.setItem(PUSH_KEY, 'active');
+      _atualizarBtnPush('active');
+      UI.toast('Notificações ativadas! ✅', 'success');
+
+    } catch (e) {
+      _atualizarBtnPush('inactive');
+      UI.toast('Erro ao ativar notificações: ' + e.message, 'error');
+    }
+  }
+
+  // ── Popup ─────────────────────────────────────────────────────
+  function _mostrarPopup(aviso) {
+    document.getElementById('popup-titulo').textContent = aviso.titulo;
+    document.getElementById('popup-texto').textContent  = aviso.texto;
+    document.getElementById('popup-aviso').classList.remove('hidden');
+  }
+  function fecharPopup() {
+    document.getElementById('popup-aviso').classList.add('hidden');
+  }
+
+  // ── Aprovar ata ───────────────────────────────────────────────
+  async function aprovarAta(idAta, btn) {
+    btn.disabled = true; btn.textContent = '...';
+    const r = await Api.aprovarAta(idAta);
+    if (r.success) {
+      btn.textContent = '✅';
+      btn.closest('.pendente-item').style.opacity = '.5';
+      UI.toast('Aprovação registrada!', 'success');
+    } else {
+      btn.disabled = false; btn.textContent = 'Aprovar ✓';
+      UI.toast(r.message || 'Erro.', 'error');
+    }
+  }
+
+  // ── PWA Install ───────────────────────────────────────────────
+  function _initPWAInstall() {
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setTimeout(() => document.getElementById('install-banner')?.classList.add('visible'), 5000);
+    });
+    document.getElementById('btn-install')?.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') UI.toast('App instalado! 🎉', 'success');
+      deferredPrompt = null;
+      document.getElementById('install-banner')?.classList.remove('visible');
+    });
+    document.getElementById('btn-install-dismiss')?.addEventListener('click', () => {
+      document.getElementById('install-banner')?.classList.remove('visible');
+    });
+  }
+
+  // ── Utilitários ───────────────────────────────────────────────
+  function _iniciais(nome) {
+    if (!nome) return '?';
+    const parts = nome.trim().split(' ').filter(Boolean);
+    return ((parts[0]?.[0] || '') + (parts[parts.length - 1]?.[0] || '')).toUpperCase();
+  }
+
+  function _fmt(d) {
+    if (!d) return '—';
+    try { return new Date(d + 'T12:00:00').toLocaleDateString('pt-BR'); } catch { return d; }
+  }
+  </script>
+</body>
+</html>
