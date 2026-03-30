@@ -74,7 +74,7 @@
       position: relative; overflow: hidden;
     }
     @media (min-width:600px) { .lib-hero { padding: var(--space-7) var(--space-6) 0; } }
-    .lib-hero::after {
+    .lib-hero {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0;
       height: 24px; background: var(--cms-off); border-radius: 20px 20px 0 0;
     }
@@ -115,8 +115,21 @@
 
     /* ── Search ── */
     .search-strip {
-      background: var(--cms-navy); padding: 0 var(--space-4) var(--space-6);
-    }
+  background: var(--cms-navy);
+  padding: 0 var(--space-4) var(--space-6);
+  position: relative; /* Adicionado para ancorar o pseudo-elemento */
+}
+
+.search-strip::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: var(--cms-off); /* Cor do fundo do conteúdo abaixo */
+  border-radius: 24px 24px 0 0;
+}
     @media (min-width:600px) { .search-strip { padding: 0 var(--space-6) var(--space-8); } }
     .search-strip-inner { max-width: 960px; margin: 0 auto; }
     .search-main {
