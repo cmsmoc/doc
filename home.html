@@ -200,66 +200,24 @@
     /* ── Push notifications ── */
     .push-card {
       background: white; border: 1.5px solid var(--cms-border);
-      border-radius: var(--radius-xl); padding: var(--space-5) var(--space-6);
-      display: flex; align-items: center; justify-content: space-between;
-      gap: var(--space-4); flex-wrap: wrap;
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      display: flex; align-items: center; gap: var(--space-4);
     }
-    .push-card-left {
-      display: flex; align-items: flex-start; gap: var(--space-4); flex: 1; min-width: 0;
-    }
-    .push-bell-icon {
-      font-size: 28px; flex-shrink: 0;
-      animation: bellRing 3s ease-in-out infinite;
-    }
-    @keyframes bellRing {
-      0%,100%{ transform: rotate(0deg); }
-      10%    { transform: rotate(-15deg); }
-      20%    { transform: rotate(15deg); }
-      30%    { transform: rotate(-10deg); }
-      40%    { transform: rotate(10deg); }
-      50%    { transform: rotate(0deg); }
-    }
-    .push-bell-active { font-size: 28px; flex-shrink: 0; }
-    .push-card-text {}
-    .push-card-title {
-      font-family: var(--font-display); font-size: var(--text-sm);
-      font-weight: 800; color: var(--cms-navy); margin-bottom: 4px;
-    }
-    .push-card-desc { font-size: 12px; color: var(--cms-muted); line-height: 1.6; }
-
-    /* Botão ativar — destaque visual estratégico */
-    .push-btn-ativar {
-      display: inline-flex; align-items: center; gap: var(--space-2);
-      padding: var(--space-3) var(--space-5);
-      background: linear-gradient(135deg, var(--cms-navy), var(--cms-blue));
-      color: white; border: none; border-radius: var(--radius-full);
-      font-family: var(--font-display); font-size: 12px; font-weight: 700;
-      letter-spacing: .5px; cursor: pointer;
-      box-shadow: 0 4px 14px rgba(13,46,90,.3);
-      transition: all var(--transition-fast);
-      white-space: nowrap; flex-shrink: 0;
-    }
-    .push-btn-ativar:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(13,46,90,.4);
-    }
-    .push-btn-ativar:active { transform: translateY(0); }
-
-    /* Estado ativo */
-    .push-active { border-color: #BBF7D0; background: #F0FDF4; }
-
-    /* Estado bloqueado */
-    .push-denied { border-color: var(--cms-border); background: var(--cms-off); }
-
-    .push-btn-desativar {
+    .push-icon { font-size: 28px; flex-shrink: 0; }
+    .push-info { flex: 1; }
+    .push-title { font-family: var(--font-display); font-size: var(--text-sm); font-weight: 700; color: var(--cms-navy); margin-bottom: 3px; }
+    .push-desc  { font-size: 12px; color: var(--cms-muted); }
+    .push-btn {
       padding: var(--space-2) var(--space-4);
-      background: white; color: var(--cms-muted);
-      border: 1px solid var(--cms-border); border-radius: var(--radius-full);
-      font-family: var(--font-display); font-size: 11px; font-weight: 600;
-      cursor: pointer; flex-shrink: 0;
-      transition: all var(--transition-fast);
+      border-radius: var(--radius-full);
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      letter-spacing: .3px; border: none; cursor: pointer;
+      transition: all var(--transition-fast); white-space: nowrap;
     }
-    .push-btn-desativar:hover { border-color: #DC2626; color: #DC2626; }
+    .push-btn.inactive { background: var(--cms-blue); color: white; }
+    .push-btn.inactive:hover { background: #1558A0; }
+    .push-btn.active { background: var(--cms-lg, #D1FAE5); color: #065F46; }
+    .push-btn.pending { background: var(--cms-off); color: var(--cms-muted); cursor: default; }
 
     /* ── Popup ── */
     .popup-overlay {
@@ -387,45 +345,15 @@
     <div class="home-section" id="section-push">
       <div class="home-section-header">
         <span class="home-section-icon">🔔</span>
-        <span class="home-section-title">Notificações oficiais</span>
+        <span class="home-section-title">Notificações</span>
       </div>
-
-      <!-- Estado: não ativado -->
-      <div id="push-card-inactive" class="push-card push-inactive">
-        <div class="push-card-left">
-          <div class="push-bell-icon" id="push-bell-anim">🔔</div>
-          <div class="push-card-text">
-            <p class="push-card-title">Receba avisos no seu celular</p>
-            <p class="push-card-desc">Convocações, mudanças de pauta e comunicados urgentes direto na tela inicial — sem precisar abrir o app.</p>
-          </div>
+      <div class="push-card">
+        <span class="push-icon">🔔</span>
+        <div class="push-info">
+          <p class="push-title">Avisos oficiais no celular</p>
+          <p class="push-desc" id="push-desc">Receba convocações e avisos urgentes diretamente no seu dispositivo.</p>
         </div>
-        <button class="push-btn-ativar" id="btn-push-ativar" onclick="ativarPush()">
-          <span>🔔</span>
-          <span>Ativar avisos</span>
-        </button>
-      </div>
-
-      <!-- Estado: ativado -->
-      <div id="push-card-active" class="push-card push-active hidden">
-        <div class="push-card-left">
-          <div class="push-bell-active">✅</div>
-          <div class="push-card-text">
-            <p class="push-card-title" style="color:var(--cms-green)">Avisos ativados</p>
-            <p class="push-card-desc">Você receberá notificações oficiais do Conselho Municipal de Saúde.</p>
-          </div>
-        </div>
-        <button class="push-btn-desativar" onclick="desativarPush()">Desativar</button>
-      </div>
-
-      <!-- Estado: bloqueado pelo navegador -->
-      <div id="push-card-denied" class="push-card push-denied hidden">
-        <div class="push-card-left">
-          <div style="font-size:24px">🔕</div>
-          <div class="push-card-text">
-            <p class="push-card-title" style="color:var(--cms-muted)">Notificações bloqueadas</p>
-            <p class="push-card-desc">Você bloqueou as notificações neste navegador. Para ativar, acesse as configurações do site no seu navegador e permita notificações.</p>
-          </div>
-        </div>
+        <button class="push-btn inactive" id="btn-push" onclick="togglePush()">Ativar</button>
       </div>
     </div>
 

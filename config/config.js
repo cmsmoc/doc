@@ -19,7 +19,7 @@ const CONFIG = {
 
   API: {
     // ⚠️  Substitua pela URL real da sua implantação GAS
-    GAS_URL: 'https://script.google.com/macros/s/AKfycbwWxaGjofMul-5MV6E_YVS3CWsic8cv3--YnDBBsUgu395s5e1ZUO2lbC8X33K0Lu9E/exec',
+    GAS_URL: 'https://script.google.com/macros/s/SEU_DEPLOYMENT_ID/exec',
     TIMEOUT: 12000,
   },
 
@@ -29,7 +29,7 @@ const CONFIG = {
 
   // OneSignal Push Notifications
   // Configure em: https://app.onesignal.com → seu app → Settings → Keys & IDs
-  ONESIGNAL_APP_ID:    'a2f4b3a1-4daf-404b-9647-23d85f6dab0d',
+  ONESIGNAL_APP_ID:    'SEU_APP_ID_AQUI',    // ← substitua
   ONESIGNAL_SAFARI_ID: '',                   // ← opcional (Safari macOS)
 
   BRAND: {

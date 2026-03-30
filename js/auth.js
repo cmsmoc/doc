@@ -1,146 +1,75 @@
 /**
- * auth.js — Módulo de autenticação e sessão
- * ──────────────────────────────────────────
- * Responsável por:
- *  - Validar login via Google Apps Script
- *  - Criar e destruir sessão local (localStorage)
- *  - Verificar se há sessão ativa
- *  - Bloquear acesso a rotas sem sessão
- *
- * Secretaria Executiva CMS-MOC | Versão 1.0
+ * auth.js — CMS Docs PWA v3.1
+ * MUDANÇA v3.1:
+ *  - isAuthenticated() agora é puramente verificação — sem redirect
+ *  - requireAuth() redireciona para INDEX (home pública) com returnTo=
+ *  - getSession() exposto publicamente para uso em index.html
+ *  - logout() limpa sessão e volta para index.html
  */
 
 const Auth = (() => {
 
-  // ── Constantes internas ───────────────────────────────────
-  const SESSION_KEY = CONFIG.SESSION.KEY;
+  const SK = (typeof CONFIG !== 'undefined' && CONFIG.SESSION?.KEY)
+    ? CONFIG.SESSION.KEY
+    : 'cms_session';
 
-  // ── Lê a sessão do localStorage ──────────────────────────
+  // ── Lê a sessão atual ─────────────────────────────────────
   function getSession() {
     try {
-      const raw = localStorage.getItem(SESSION_KEY);
-      return raw ? JSON.parse(raw) : null;
+      return JSON.parse(localStorage.getItem(SK) || '{}');
     } catch {
-      return null;
+      return {};
     }
   }
 
-  // ── Verifica se há sessão válida ──────────────────────────
+  // ── Verifica se está autenticado (sem redirect) ───────────
+  // Use isso em qualquer página para adaptar UI sem forçar login
   function isAuthenticated() {
-    const session = getSession();
-    return session !== null && session.nome && session.id;
+    const s = getSession();
+    return !!(s && s.id && s.nome);
   }
 
-  // ── Cria sessão local após login bem-sucedido ─────────────
-  function createSession(userData) {
-    const session = {
-      id:        userData.id,
-      nome:      userData.nome,
-      segmento:  userData.segmento  || '',
-      entidade:  userData.entidade  || '',
-      cadeira:   userData.cadeira   || '',
-      email:     userData.email     || '',
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    return session;
-  }
-
-  // ── Encerra a sessão local ────────────────────────────────
-  function destroySession() {
-    localStorage.removeItem(SESSION_KEY);
-    // Limpa também o cache de documentos
-    localStorage.removeItem(CONFIG.SESSION.DOCS_CACHE);
-  }
-
-  /**
-   * login(nome, senha)
-   * ──────────────────────────────────────────────────────────
-   * Envia credenciais ao Apps Script e aguarda resposta.
-   * Retorna { ok: true, user: {...} } ou { ok: false, message: '...' }
-   */
-  async function login(nome, senha) {
-    try {
-      const url = new URL(CONFIG.API.GAS_URL);
-      url.searchParams.set('action', 'login');
-      url.searchParams.set('nome',   nome.trim());
-      url.searchParams.set('senha',  senha.trim());
-
-      const controller = new AbortController();
-      const timeout    = setTimeout(() => controller.abort(), CONFIG.API.TIMEOUT);
-
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-
-      if (!response.ok) {
-        throw new Error(`Erro HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        const session = createSession(data.user);
-        return { ok: true, user: session };
-      } else {
-        return { ok: false, message: data.message || 'Credenciais inválidas.' };
-      }
-
-    } catch (err) {
-      if (err.name === 'AbortError') {
-        return { ok: false, message: 'Tempo de conexão esgotado. Verifique sua internet.' };
-      }
-      console.error('[Auth] Erro no login:', err);
-      return { ok: false, message: 'Não foi possível conectar ao servidor. Tente novamente.' };
-    }
-  }
-
-  /**
-   * logout()
-   * ──────────────────────────────────────────────────────────
-   * Encerra a sessão e redireciona para o login.
-   */
-  function logout() {
-    destroySession();
-    window.location.href = 'login.html';
-  }
-
-  /**
-   * requireAuth()
-   * ──────────────────────────────────────────────────────────
-   * Deve ser chamado no início de qualquer página protegida.
-   * Se não houver sessão, redireciona para login.
-   */
+  // ── Exige autenticação — redireciona se não estiver logado ─
+  // Use apenas em páginas restritas (dashboard, diretoria, etc.)
+  // Redireciona para index.html?returnTo=<página_atual>
   function requireAuth() {
     if (!isAuthenticated()) {
-      window.location.href = 'login.html';
+      const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.replace('index.html?login=1&returnTo=' + returnTo);
+      return false;
+    }
+    return true;
+  }
+
+  // ── Logout ────────────────────────────────────────────────
+  function logout() {
+    localStorage.removeItem(SK);
+    // Volta para a home pública
+    window.location.replace('index.html');
+  }
+
+  // ── Inicializa UI de navegação (avatar/nome na navbar) ────
+  // Chamado por cada página para popular o estado do usuário
+  function initNavbar() {
+    const s = getSession();
+    const avatar   = document.getElementById('nav-avatar');
+    const userName = document.getElementById('nav-user-name');
+    if (!avatar || !userName) return;
+
+    if (s.nome) {
+      const partes  = s.nome.trim().split(' ').filter(Boolean);
+      const iniciais = ((partes[0]?.[0] || '') + (partes[partes.length - 1]?.[0] || '')).toUpperCase();
+      avatar.textContent   = iniciais;
+      userName.textContent = partes[0];
     }
   }
 
-  /**
-   * redirectIfLogged()
-   * ──────────────────────────────────────────────────────────
-   * Chamado na página de login.
-   * Se já estiver logado, vai direto ao dashboard.
-   */
-  function redirectIfLogged() {
-    if (isAuthenticated()) {
-      window.location.href = 'index.html';
-    }
-  }
-
-  // ── API pública do módulo ─────────────────────────────────
   return {
     getSession,
     isAuthenticated,
-    createSession,
-    destroySession,
-    login,
-    logout,
     requireAuth,
-    redirectIfLogged,
+    logout,
+    initNavbar,
   };
 
 })();

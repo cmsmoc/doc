@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Meu Painel — CMS Montes Claros</title>
+  <meta name="theme-color" content="#0D2E5A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="pwa/manifest.json">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/4g2ZZyGZ/iconcms1.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/brand.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ══════════════════════════════════════════════════════
+       DASHBOARD v1.0 — ÁREA DO CONSELHEIRO
+       Página protegida: requer Auth.requireAuth()
+       Layout: header com saudação + grid de cards funcionais
+       ══════════════════════════════════════════════════════ */
+
+    #navbar { background: var(--cms-navy); }
+
+    /* ── Hero do painel ── */
+    .dash-hero {
+      background: linear-gradient(135deg, var(--cms-navy) 0%, #1B4070 100%);
+      padding: var(--space-6) var(--space-4) var(--space-8);
+      position: relative; overflow: hidden;
+    }
+    .dash-hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 24px; background: var(--cms-off); border-radius: 20px 20px 0 0;
+    }
+    .dash-hero::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 320px; height: 320px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,196,0,.08) 0%, transparent 65%);
+    }
+    @media (min-width:600px) { .dash-hero { padding: var(--space-7) var(--space-6) var(--space-9); } }
+    .dash-hero-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: var(--space-4); flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+    .dash-saudacao {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--cms-yellow); margin-bottom: 8px;
+    }
+    .dash-nome {
+      font-family: var(--font-display); font-size: clamp(24px, 4vw, 40px);
+      font-weight: 900; color: white; letter-spacing: -1px; line-height: 1.05;
+    }
+    .dash-info {
+      font-size: 13px; color: rgba(255,255,255,.5); margin-top: 6px; line-height: 1.6;
+    }
+    .dash-info strong { color: rgba(255,255,255,.8); }
+
+    /* ── Conteúdo ── */
+    .dash-wrap { max-width: 960px; margin: 0 auto; padding: var(--space-5) var(--space-4); }
+    @media (min-width:600px) { .dash-wrap { padding: var(--space-6); } }
+
+    /* ── Section label ── */
+    .dash-section-label {
+      font-family: var(--font-display); font-size: 10px; font-weight: 700;
+      letter-spacing: 2.5px; text-transform: uppercase; color: var(--cms-blue);
+      margin-bottom: var(--space-3); margin-top: var(--space-6);
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .dash-section-label:first-child { margin-top: 0; }
+    .dash-section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--cms-border); max-width: 60px;
+    }
+
+    /* ── Card base ── */
+    .dash-card {
+      background: white; border: 1px solid var(--cms-border);
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+    .dash-card-header {
+      padding: 14px 18px; border-bottom: 1px solid var(--cms-border);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .dash-card-title {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      color: var(--cms-navy); display: flex; align-items: center; gap: 7px;
+    }
+    .dash-card-badge {
+      font-family: var(--font-display); font-size: 9px; font-weight: 700;
+      letter-spacing: .8px; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-blue   { background: #DBEAFE; color: #1E40AF; }
+    .badge-green  { background: #D1FAE5; color: #065F46; }
+    .badge-yellow { background: #FEF9C3; color: #854D0E; }
+    .badge-red    { background: #FEE2E2; color: #991B1B; }
+    .badge-muted  { background: var(--cms-off); color: var(--cms-muted); }
+
+    /* ── Próxima reunião ── */
+    .reuniao-card {
+      padding: 20px 18px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .reuniao-data-wrap {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .reuniao-data-box {
+      background: var(--cms-navy); color: white; border-radius: 10px;
+      padding: 8px 14px; text-align: center; flex-shrink: 0; min-width: 56px;
+    }
+    .reuniao-data-dia {
+      font-family: var(--font-display); font-size: 28px; font-weight: 900; line-height: 1;
+    }
+    .reuniao-data-mes {
+      font-family: var(--font-display); font-size: 9px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--cms-yellow);
+      margin-top: 2px;
+    }
+    .reuniao-info {}
+    .reuniao-titulo {
+      font-family: var(--font-display); font-size: 14px; font-weight: 800;
+      color: var(--cms-navy); line-height: 1.2;
+    }
+    .reuniao-meta {
+      font-size: 12px; color: var(--cms-muted); margin-top: 4px; line-height: 1.6;
+    }
+    .reuniao-meta strong { color: var(--cms-ink); }
+    .reuniao-acoes {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .btn-sm-dash {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border-radius: 6px; border: none;
+      font-family: var(--font-display); font-size: 11px; font-weight: 700;
+      cursor: pointer; text-decoration: none; transition: all var(--transition-fast);
+    }
+    .btn-navy { background: var(--cms-navy); color: white; }
+    .btn-navy:hover { background: var(--cms-blue); }
+    .btn-outline { background: white; color: var(--cms-navy); border: 1.5px solid var(--cms-border); }
+    .btn-outline:hover { border-color: var(--cms-blue); color: var(--cms-blue); }
+
+    /* ── Aviso card ── */
+    .aviso-item {
+      padding: 12px 18px; border-bottom: 1px solid var(--cms-border);
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .aviso-item:last-child { border-bottom: none; }
+    .aviso-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+    }
+    .aviso-dot.blue   { background: var(--cms-blue); }
+    .aviso-dot.green  { background: var(--cms-green); }
+    .aviso-dot.yellow { background: var(--cms-yellow); }
+    .aviso-dot.red    { background: #DC2626; }
+    .aviso-text {}
+    .aviso-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--cms-navy); }
+    .aviso-desc { font-size: 12px; color: var(--cms-muted); margin-top: 2px; line-height: 1.5; }
+
+    /* ── Agenda ── */
+    .agenda-item {
+      padding: 11px 18px; border-bottom: 1px solid var(--cms-border);
+      display: grid; grid-template-columns: 44px 1fr auto;
+      align-items: center; gap: 12px;
+    }
+    .agenda-item:last-child { border-bottom: none; }
+    .agenda-data {
+      text-align: center; font-family: var(--font-display);
+    }
+    .agenda-dia { font-size: 18px; font-weight: 900; color: var(--cms-navy); line-height: 1; }
+    .agenda-mes { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--cms-muted); }
+    .agenda-titulo { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--cms-navy); }
+    .agenda-local { font-size: 11px; color: var(--cms-muted); margin-top: 2px; }
+    .agenda-tipo-chip {
+      font-family: var(--font-display); font-size: 9px; font-weight: 700;
+      letter-spacing: .5px; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+      background: #DBEAFE; color: #1E40AF;
+    }
+    .agenda-tipo-chip.comissao { background: #EDE9FE; color: #5B21B6; }
+    .agenda-tipo-chip.conf     { background: #D1FAE5; color: #065F46; }
+
+    /* ── Favoritos ── */
+    .fav-list-item {
+      padding: 11px 18px; border-bottom: 1px solid var(--cms-border);
+      display: flex; align-items: center; gap: 12px; cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .fav-list-item:last-child { border-bottom: none; }
+    .fav-list-item:hover { background: var(--cms-off); }
+    .fav-icon { font-size: 18px; flex-shrink: 0; }
+    .fav-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--cms-navy); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fav-meta  { font-size: 11px; color: var(--cms-muted); white-space: nowrap; }
+
+    /* ── Módulos (acesso rápido) ── */
+    .modulos-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    @media (min-width:480px) { .modulos-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width:720px) { .modulos-grid { grid-template-columns: repeat(6, 1fr); } }
+    .modulo-btn {
+      background: white; border: 1.5px solid var(--cms-border);
+      border-radius: 12px; padding: 16px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      text-decoration: none; transition: all var(--transition-base); cursor: pointer;
+      border-bottom: 3px solid transparent;
+    }
+    .modulo-btn:hover { box-shadow: var(--shadow-sm); border-color: #93C5FD; border-bottom-color: var(--cms-blue); transform: translateY(-1px); }
+    .modulo-btn-icon { font-size: 22px; }
+    .modulo-btn-label { font-family: var(--font-display); font-size: 10px; font-weight: 700; color: var(--cms-navy); letter-spacing: .3px; text-align: center; }
+    .modulo-btn.disabled { opacity: .5; pointer-events: none; }
+
+    /* ── Empty states ── */
+    .empty-state {
+      padding: 24px 18px; text-align: center;
+      color: var(--cms-muted); font-size: 13px; line-height: 1.6;
+    }
+    .empty-state-icon { font-size: 32px; opacity: .4; margin-bottom: 8px; }
+
+    /* ── Loading inline ── */
+    .inline-spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--cms-border); border-top-color: var(--cms-blue);
+      border-radius: 50%; animation: spin .7s linear infinite;
+      margin: 24px auto; display: block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Grid de cards ── */
+    .dash-grid { display: grid; gap: 16px; }
+    @media (min-width:640px) { .dash-grid.cols2 { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <img src="logo/logohwh.png" alt="CMS" class="loading-logo">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando painel</p>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- ── Navbar ── -->
+  <nav id="navbar" role="navigation">
+    <div class="navbar-brand">
+      <a href="index.html" class="navbar-back" title="Biblioteca de documentos">
+        ← <span class="navbar-back-label">Documentos</span>
+      </a>
+      <div class="navbar-divider"></div>
+      <div class="navbar-title">Meu <span>Painel</span></div>
+    </div>
+    <div class="navbar-actions">
+      <div class="navbar-user">
+        <div class="navbar-avatar" id="nav-avatar">--</div>
+        <span class="navbar-name" id="nav-user-name"></span>
+      </div>
+      <div class="navbar-divider"></div>
+      <button class="navbar-btn" onclick="location.href='perfil.html'" title="Meu perfil">👤</button>
+      <button class="navbar-btn" onclick="location.href='change-password.html'" title="Alterar senha">🔑</button>
+      <button class="navbar-btn" id="btn-logout" title="Sair">⎋</button>
+    </div>
+  </nav>
+
+  <!-- ── Hero com saudação ── -->
+  <div class="dash-hero" id="dash-hero">
+    <div class="dash-hero-inner">
+      <div>
+        <p class="dash-saudacao" id="dash-saudacao">Bem-vindo</p>
+        <h1 class="dash-nome" id="dash-nome">Conselheiro</h1>
+        <p class="dash-info" id="dash-info">
+          <strong id="dash-segmento">—</strong> · <span id="dash-entidade">—</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Conteúdo do dashboard ── -->
+  <div class="dash-wrap">
+
+    <!-- Acesso rápido: módulos -->
+    <p class="dash-section-label">Acesso rápido</p>
+    <div class="modulos-grid">
+      <a href="index.html"         class="modulo-btn"><span class="modulo-btn-icon">📄</span><span class="modulo-btn-label">Documentos</span></a>
+      <a href="atas.html"          class="modulo-btn"><span class="modulo-btn-icon">📋</span><span class="modulo-btn-label">Atas</span></a>
+      <a href="reunioes.html"      class="modulo-btn"><span class="modulo-btn-icon">🗓️</span><span class="modulo-btn-label">Reuniões</span></a>
+      <a href="comissoes.html"     class="modulo-btn"><span class="modulo-btn-icon">🏛️</span><span class="modulo-btn-label">Comissões</span></a>
+      <a href="solicitacoes.html"  class="modulo-btn"><span class="modulo-btn-icon">📨</span><span class="modulo-btn-label">Solicitações</span></a>
+      <a href="perfil.html"        class="modulo-btn"><span class="modulo-btn-icon">👤</span><span class="modulo-btn-label">Meu Perfil</span></a>
+    </div>
+
+    <!-- Próxima reunião + Avisos -->
+    <div class="dash-grid cols2" style="margin-top: var(--space-5);">
+
+      <!-- Próxima reunião -->
+      <div class="dash-card" id="card-reuniao">
+        <div class="dash-card-header">
+          <span class="dash-card-title">🗓️ Próxima reunião</span>
+          <span class="dash-card-badge badge-blue" id="reuniao-badge">Plenária</span>
+        </div>
+        <div id="reuniao-body">
+          <div class="inline-spinner"></div>
+        </div>
+      </div>
+
+      <!-- Avisos -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <span class="dash-card-title">📢 Avisos</span>
+          <span class="dash-card-badge badge-yellow" id="avisos-count"></span>
+        </div>
+        <div id="avisos-body">
+          <div class="inline-spinner"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Agenda -->
+    <p class="dash-section-label" style="margin-top:var(--space-5);">Agenda</p>
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <span class="dash-card-title">📅 Próximos eventos</span>
+        <a href="reunioes.html" style="font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--cms-blue);text-decoration:none;">Ver todos →</a>
+      </div>
+      <div id="agenda-body">
+        <div class="inline-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Favoritos -->
+    <p class="dash-section-label" style="margin-top:var(--space-5);">Favoritos</p>
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <span class="dash-card-title">⭐ Documentos salvos</span>
+        <a href="index.html" style="font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--cms-blue);text-decoration:none;">Biblioteca →</a>
+      </div>
+      <div id="favoritos-body">
+        <div class="inline-spinner"></div>
+      </div>
+    </div>
+
+  </div><!-- /dash-wrap -->
+
+  <script src="config/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  // DASHBOARD v1.0
+  // ══════════════════════════════════════════════════════════
+
+  // Página protegida — redireciona se não logado
+  if (!Auth.requireAuth()) { /* requireAuth faz o redirect */ }
+
+  const _s = Auth.getSession();
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    UI.init();
+    _initNavbar();
+    _initHero();
+    UI.hideLoadingScreen();
+
+    // Carrega dados em paralelo — falhas individuais não derrubam tudo
+    await Promise.allSettled([
+      _loadProximaReuniao(),
+      _loadAvisos(),
+      _loadAgenda(),
+      _loadFavoritos(),
+    ]);
+  });
+
+  // ── Navbar ────────────────────────────────────────────────
+  function _initNavbar() {
+    const partes   = (_s.nome || '').trim().split(' ').filter(Boolean);
+    const iniciais = ((partes[0]?.[0] || '') + (partes[partes.length-1]?.[0] || '')).toUpperCase();
+    document.getElementById('nav-avatar').textContent    = iniciais || '?';
+    document.getElementById('nav-user-name').textContent = partes[0] || '';
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (confirm('Sair do sistema?')) Auth.logout();
+    });
+  }
+
+  // ── Hero: saudação contextual ─────────────────────────────
+  function _initHero() {
+    const partes = (_s.nome || '').trim().split(' ').filter(Boolean);
+    const hora   = new Date().getHours();
+    const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+
+    document.getElementById('dash-saudacao').textContent = saudacao + ',';
+    document.getElementById('dash-nome').textContent     = partes[0] || 'Conselheiro';
+    document.getElementById('dash-segmento').textContent = _s.segmento || 'Conselheiro';
+    document.getElementById('dash-entidade').textContent = _s.entidade || '';
+  }
+
+  // ── Próxima reunião ───────────────────────────────────────
+  async function _loadProximaReuniao() {
+    const body = document.getElementById('reuniao-body');
+    try {
+      const data   = await Api.getReunioes();
+      const lista  = (data.reunioes || []).filter(r => r.data && new Date(r.data + 'T23:59:00') >= new Date());
+      const proxima = lista.sort((a, b) => a.data.localeCompare(b.data))[0];
+
+      if (!proxima) {
+        body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div>Sem reuniões agendadas no momento.</div>`;
+        return;
+      }
+
+      const dt  = new Date(proxima.data + 'T12:00:00');
+      const dia = dt.getDate();
+      const mes = dt.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.','');
+      document.getElementById('reuniao-badge').textContent = proxima.tipo || 'Plenária';
+
+      body.innerHTML = `
+        <div class="reuniao-card">
+          <div class="reuniao-data-wrap">
+            <div class="reuniao-data-box">
+              <div class="reuniao-data-dia">${dia}</div>
+              <div class="reuniao-data-mes">${mes}</div>
+            </div>
+            <div class="reuniao-info">
+              <p class="reuniao-titulo">${proxima.titulo || proxima.tipo || 'Reunião Ordinária'}</p>
+              <p class="reuniao-meta">
+                ${proxima.hora ? `<strong>${proxima.hora}</strong> · ` : ''}${proxima.local || 'Local a confirmar'}
+              </p>
+            </div>
+          </div>
+          ${proxima.descricao ? `<p style="font-size:12px;color:var(--cms-muted);line-height:1.6;">${proxima.descricao}</p>` : ''}
+          <div class="reuniao-acoes">
+            <a href="reunioes.html" class="btn-sm-dash btn-navy">Ver detalhes</a>
+            <a href="index.html" class="btn-sm-dash btn-outline">Documentos da pauta</a>
+          </div>
+        </div>`;
+    } catch {
+      body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div>Não foi possível carregar.</div>`;
+    }
+  }
+
+  // ── Avisos ────────────────────────────────────────────────
+  async function _loadAvisos() {
+    const body = document.getElementById('avisos-body');
+    const COR  = { blue: 'blue', green: 'green', yellow: 'yellow', red: 'red' };
+    try {
+      const data   = await Api.getAvisos(_s.perfil || 'publico');
+      const avisos = data.avisos || [];
+      document.getElementById('avisos-count').textContent = avisos.length || '';
+
+      if (!avisos.length) {
+        body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✅</div>Nenhum aviso no momento.</div>`;
+        return;
+      }
+      body.innerHTML = avisos.slice(0, 4).map(a => `
+        <div class="aviso-item">
+          <div class="aviso-dot ${COR[a.cor] || 'blue'}"></div>
+          <div class="aviso-text">
+            <p class="aviso-titulo">${a.titulo}</p>
+            ${a.texto ? `<p class="aviso-desc">${a.texto.substring(0, 100)}${a.texto.length > 100 ? '…' : ''}</p>` : ''}
+          </div>
+        </div>`).join('');
+    } catch {
+      body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div>Não foi possível carregar.</div>`;
+    }
+  }
+
+  // ── Agenda ────────────────────────────────────────────────
+  async function _loadAgenda() {
+    const body = document.getElementById('agenda-body');
+    const TIPOS = { comissao: 'comissao', 'câmara': 'comissao', conf: 'conf', conferência: 'conf' };
+    try {
+      const data = await Api.getReunioes();
+      const hoje = new Date();
+      const lista = (data.reunioes || [])
+        .filter(r => r.data && new Date(r.data + 'T23:59:00') >= hoje)
+        .sort((a, b) => a.data.localeCompare(b.data))
+        .slice(0, 5);
+
+      if (!lista.length) {
+        body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div>Agenda vazia por enquanto.</div>`;
+        return;
+      }
+      body.innerHTML = lista.map(r => {
+        const dt  = new Date(r.data + 'T12:00:00');
+        const dia = dt.getDate();
+        const mes = dt.toLocaleDateString('pt-BR', { month: 'short' }).replace('.','');
+        const tipoClass = TIPOS[(r.tipo || '').toLowerCase()] || '';
+        return `
+          <div class="agenda-item">
+            <div class="agenda-data">
+              <div class="agenda-dia">${dia}</div>
+              <div class="agenda-mes">${mes}</div>
+            </div>
+            <div>
+              <p class="agenda-titulo">${r.titulo || r.tipo || 'Reunião'}</p>
+              <p class="agenda-local">${r.hora ? r.hora + ' · ' : ''}${r.local || ''}</p>
+            </div>
+            <span class="agenda-tipo-chip ${tipoClass}">${r.tipo || 'Plenária'}</span>
+          </div>`;
+      }).join('');
+    } catch {
+      body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div>Não foi possível carregar.</div>`;
+    }
+  }
+
+  // ── Favoritos ─────────────────────────────────────────────
+  async function _loadFavoritos() {
+    const body = document.getElementById('favoritos-body');
+    try {
+      const data = await Api.getFavoritos();
+      const favs = data.favoritos || [];
+
+      if (!favs.length) {
+        body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⭐</div>Nenhum documento favoritado ainda.<br><a href="index.html" style="color:var(--cms-blue);font-weight:600;">Explorar documentos →</a></div>`;
+        return;
+      }
+      body.innerHTML = favs.slice(0, 5).map(d => `
+        <div class="fav-list-item" onclick="window.open('${d.link || '#'}','_blank')">
+          <span class="fav-icon">📄</span>
+          <span class="fav-titulo">${d.titulo}</span>
+          <span class="fav-meta">${d.tipo || ''} · ${d.ano || ''}</span>
+        </div>`).join('');
+    } catch {
+      body.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div>Não foi possível carregar.</div>`;
+    }
+  }
+  </script>
+</body>
+</html>
