@@ -1069,7 +1069,6 @@ const TOTAL_TITULARES = 32;
 // Campos: id, nome, entidade, segmento, cadeira, genero ('M'|'F')
 // ════════════════════════════════════════════════════════════════
 const CONSELHEIROS = [
-[
 {id:'C001',nome:'Agna Soares da Silva Menezes',entidade:'GRS',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
 {id:'C002',nome:'Amanda Mendes Soares',entidade:'CLS',segmento:'Usuários',cadeira:'Titular',genero:'F'},
 {id:'C003',nome:'Ana Maria Pereira de Souza Rodrigues',entidade:'AM-PMS',segmento:'Usuários',cadeira:'Titular',genero:'F'},
@@ -1128,7 +1127,7 @@ const CONSELHEIROS = [
 {id:'C056',nome:'Thiago Henrique Alves de Souza',entidade:'Rotary',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
 {id:'C057',nome:'Valdeci Alves Costa',entidade:'SIND-SAÚDE',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
 {id:'C058',nome:'Washington Luis Carvalho Souto',entidade:'SIEESS-MG',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
-{id:'C059',nome:'Wilhas Ferreira',entidade:'CLS',segmento:'Usuários',cadeira:'Suplente',genero:'M'}
+{id:'C059',nome:'Wilhas Ferreira',entidade:'CLS',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
 ].sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
 
 // ════════════════════════════════════════════════════════════════
@@ -1699,117 +1698,5 @@ async function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
-
-<!-- ════════════════════════════════════════════════════════════
-     CODE.GS PARA O BACKEND
-     Instruções: Crie um novo Google Apps Script separado
-     (não o do SerTão Conselheiro principal).
-     Vá em script.google.com → Novo projeto → cole o código abaixo.
-     Implante como Web App: "Qualquer usuário, inclusive anônimos".
-     Cole a URL gerada em GAS_URL acima.
-     ════════════════════════════════════════════════════════════
-/*
-// ── Cole no Apps Script (Code.gs) ──────────────────────────
-
-const SHEET_ID_PRESENCA = 'COLE_AQUI_O_ID_DA_SUA_PLANILHA';
-
-function doGet(e) {
-  const p = e.parameter || {};
-  let result;
-  try {
-    switch(p.action) {
-      case 'presencaAcao':      result = handleAcao(p);       break;
-      case 'presencaPublico':   result = handlePublico(p);    break;
-      case 'presencaGetEstado': result = handleGetEstado(p);  break;
-      default:                  result = {success:false,msg:'ação inválida'};
-    }
-  } catch(err) {
-    result = {success:false,msg:err.message};
-  }
-  return ContentService
-    .createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-// Aba: PRESENCA_STATUS — estado atual de cada conselheiro
-function handleAcao(p) {
-  const ss     = SpreadsheetApp.openById(SHEET_ID_PRESENCA);
-  const shLog  = getOrCreate(ss, 'PRESENCA_LOG',    ['TIMESTAMP','REUNIAO','ID_CONS','NOME','ACAO','DETALHE','STATUS']);
-  const shStat = getOrCreate(ss, 'PRESENCA_STATUS', ['REUNIAO','ID_CONS','NOME','TIPO','MOTIVO','OBS','UPDATED']);
-
-  const reuniao = p.reuniao || '';
-  const idCons  = p.id_cons  || '';
-  const nome    = p.nome     || '';
-  const acao    = p.acao     || '';
-  const detalhe = p.detalhe  || '';
-  const status  = p.status   || '';
-
-  // Log sempre
-  shLog.appendRow([new Date(), reuniao, idCons, nome, acao, detalhe, status]);
-
-  // Atualizar status
-  const rows = shStat.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] === reuniao && rows[i][1] === idCons) {
-      if (status === 'sem_status') {
-        shStat.deleteRow(i + 1);
-      } else {
-        shStat.getRange(i+1,4,1,4).setValues([[
-          status,
-          detalhe.includes('|') ? detalhe.split('|')[0].trim() : detalhe,
-          detalhe.includes('|') ? detalhe.split('|')[1].trim() : '',
-          new Date()
-        ]]);
-      }
-      return {success:true};
-    }
-  }
-  if (status !== 'sem_status') {
-    const motivo = detalhe.includes('|') ? detalhe.split('|')[0].trim() : detalhe;
-    const obs    = detalhe.includes('|') ? detalhe.split('|')[1].trim() : '';
-    shStat.appendRow([reuniao, idCons, nome, status, motivo, obs, new Date()]);
-  }
-  return {success:true};
-}
-
-// Aba: PRESENCA_PUBLICO
-function handlePublico(p) {
-  const ss   = SpreadsheetApp.openById(SHEET_ID_PRESENCA);
-  const sh   = getOrCreate(ss, 'PRESENCA_PUBLICO', ['TIMESTAMP','REUNIAO','NOME','EMAIL','CARGO']);
-  sh.appendRow([new Date(), p.reuniao||'', p.nome||'', p.email||'', p.cargo||'']);
-  return {success:true};
-}
-
-// Retorna o estado atual para re-hidratar a página
-function handleGetEstado(p) {
-  const ss      = SpreadsheetApp.openById(SHEET_ID_PRESENCA);
-  const reuniao = p.reuniao || '';
-
-  const shStat = ss.getSheetByName('PRESENCA_STATUS');
-  const shPub  = ss.getSheetByName('PRESENCA_PUBLICO');
-
-  const conselheiros = shStat ? shStat.getDataRange().getValues().slice(1)
-    .filter(r => r[0] === reuniao)
-    .map(r => ({id_cons:r[1], nome:r[2], tipo:r[3], motivo:r[4], obs:r[5]})) : [];
-
-  const publico = shPub ? shPub.getDataRange().getValues().slice(1)
-    .filter(r => r[1] === reuniao)
-    .map(r => ({nome:r[2], email:r[3], cargo:r[4]})) : [];
-
-  return {success:true, conselheiros, publico};
-}
-
-function getOrCreate(ss, nome, headers) {
-  let sh = ss.getSheetByName(nome);
-  if (!sh) {
-    sh = ss.insertSheet(nome);
-    sh.getRange(1,1,1,headers.length).setValues([headers]);
-    sh.getRange(1,1,1,headers.length).setBackground('#0D2E5A').setFontColor('#FFFFFF').setFontWeight('bold');
-    sh.setFrozenRows(1);
-  }
-  return sh;
-}
-*/
--->
 </body>
 </html>
