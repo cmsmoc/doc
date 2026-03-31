@@ -1557,7 +1557,7 @@ function atualizarStats() {
 
   const pct = Math.min(100, Math.round(presentes / TOTAL_TITULARES * 100));
   document.getElementById('quorum-fill').style.width = pct + '%';
-  const quorum = Math.ceil(TOTAL_TITULARES / 2) + 1;
+  const quorum = Math.ceil(TOTAL_TITULARES / 3) + 1;
   document.getElementById('quorum-txt').textContent =
     presentes >= quorum ? `✅ Quórum atingido (${pct}%)` : `Quórum ${pct}% (faltam ${quorum - presentes})`;
 }
