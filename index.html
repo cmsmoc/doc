@@ -31,7 +31,8 @@
        ══════════════════════════════════════════════════════ */
 
     /* ── Navbar: botão Entrar (estado não-logado) ── */
-    .btn-entrar {
+  
+.btn-entrar {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 14px; border-radius: var(--radius-md);
       background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
@@ -48,6 +49,8 @@
       padding: 10px 20px;
       display: flex; align-items: center; justify-content: space-between;
       gap: 12px;
+  border-bottom: none !important;
+
     }
     .painel-banner-text {
       font-family: var(--font-display); font-size: 12px; font-weight: 600;
@@ -65,73 +68,79 @@
     .painel-banner-link:hover { opacity: .88; }
 
     /* ── Navbar ── */
-    #navbar { background: var(--cms-navy); }
+    #navbar {  background: var(--cms-navy); 
+  border-bottom: none !important; 
+  margin-bottom: 0 !important; 
+  box-shadow: none !important; }
 
-    /* ── Hero ── */
-    .lib-hero {
-      background: var(--cms-navy);
-      padding: var(--space-6) var(--space-4) 0;
-      position: relative; overflow: hidden;
-    }
-    @media (min-width:600px) { .lib-hero { padding: var(--space-7) var(--space-6) 0; } }
-    .lib-hero {
-      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
-      height: 24px; background: var(--cms-off); border-radius: 20px 20px 0 0;
-    }
-    .lib-hero-inner {
-      max-width: 960px; margin: 0 auto;
-      padding-bottom: var(--space-7); position: relative; z-index: 1;
-    }
-    .lib-hero-top {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4);
-    }
-    .lib-eyebrow {
-      font-family: var(--font-display); font-size: 10px; font-weight: 700;
-      letter-spacing: 3px; text-transform: uppercase;
-      color: var(--cms-yellow); margin-bottom: var(--space-2);
-    }
-    .lib-title {
-      font-family: var(--font-display); font-size: clamp(20px, 5vw, 36px);
-      font-weight: 900; color: white; letter-spacing: -1px; line-height: 1.05;
-    }
-    .lib-title em { color: var(--cms-yellow); font-style: normal; }
-    .lib-meta { font-size: var(--text-xs); color: rgba(255,255,255,.45); margin-top: 4px; }
-    .lib-stats { display: none; }
-    @media (min-width:500px) { .lib-stats { display: flex; gap: var(--space-4); } }
-    .lib-stat { text-align: right; }
-    .lib-stat-n { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: white; line-height: 1; }
-    .lib-stat-l { font-size: 10px; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; }
+/* ── Hero ── */    
+.lib-hero {      
+  background: var(--cms-navy);      
+  padding: var(--space-6) var(--space-4) 0;      
+  position: relative; 
+}    
+@media (min-width:600px) { 
+  .lib-hero { padding: var(--space-7) var(--space-6) 0; } 
+}    
 
-    /* ── Badge de acesso público ── */
-    .acesso-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-family: var(--font-display); font-size: 9px; font-weight: 700;
-      letter-spacing: 1px; text-transform: uppercase;
-      background: rgba(245,196,0,.15); border: 1px solid rgba(245,196,0,.3);
-      color: var(--cms-yellow); padding: 3px 9px; border-radius: 20px;
-      margin-top: var(--space-3);
-    }
+/* O bloco ".lib-hero" duplicado com position absolute foi deletado daqui! */
 
-    /* ── Search ── */
-    .search-strip {
-  background: var(--cms-navy);
-  padding: 0 var(--space-4) var(--space-6);
-  position: relative; /* Adicionado para ancorar o pseudo-elemento */
+.lib-hero-inner {      
+  max-width: 960px; margin: 0 auto;      
+  padding-bottom: var(--space-7); position: relative; z-index: 1;    
+}    
+.lib-hero-top {      
+  display: flex; align-items: flex-end; justify-content: space-between;      
+  gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4);    
+}    
+.lib-eyebrow {      
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;      
+  letter-spacing: 3px; text-transform: uppercase;      
+  color: var(--cms-yellow); margin-bottom: var(--space-2);    
+}    
+.lib-title {      
+  font-family: var(--font-display); font-size: clamp(20px, 5vw, 36px);      
+  font-weight: 900; color: white; letter-spacing: -1px; line-height: 1.05;    
+}    
+.lib-title em { color: var(--cms-yellow); font-style: normal; }    
+.lib-meta { font-size: var(--text-xs); color: rgba(255,255,255,.45); margin-top: 4px; }    
+.lib-stats { display: none; }    
+@media (min-width:500px) { .lib-stats { display: flex; gap: var(--space-4); } }    
+.lib-stat { text-align: right; }    
+.lib-stat-n { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: white; line-height: 1; }    
+.lib-stat-l { font-size: 10px; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; }
+
+/* ── Badge de acesso público ── */    
+.acesso-badge {      
+  display: inline-flex; align-items: center; gap: 4px;      
+  font-family: var(--font-display); font-size: 9px; font-weight: 700;      
+  letter-spacing: 1px; text-transform: uppercase;      
+  background: rgba(245,196,0,.15); border: 1px solid rgba(245,196,0,.3);      
+  color: var(--cms-yellow); padding: 3px 9px; border-radius: 20px;      
+  margin-top: var(--space-3);    
 }
 
-.search-strip::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 24px;
-  background: var(--cms-off); /* Cor do fundo do conteúdo abaixo */
+/* ── Search ── */    
+.search-strip {  
+  background: var(--cms-navy);  
+  padding: 0 var(--space-4) var(--space-6);  
+  position: relative; 
+}
+
+/* A borda arredondada fica ancorada perfeitamente no fundo da barra de busca */
+.search-strip::after {  
+  content: '';  
+  position: absolute;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  height: 24px;  
+  background: var(--cms-off); 
   border-radius: 24px 24px 0 0;
-}
-    @media (min-width:600px) { .search-strip { padding: 0 var(--space-6) var(--space-8); } }
-    .search-strip-inner { max-width: 960px; margin: 0 auto; }
+}    
+
+@media (min-width:600px) { .search-strip { padding: 0 var(--space-6) var(--space-8); } }    
+.search-strip-inner { max-width: 960px; margin: 0 auto; }
     .search-main {
       display: flex; gap: var(--space-2); align-items: center;
       background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.15);
@@ -520,6 +529,7 @@
   </div>
 
   <!-- ── Navbar ── -->
+
   <nav id="navbar" role="navigation">
     <div class="navbar-brand">
       <img src="https://i.ibb.co/qM8MN3zx/Logotipo-CMSMOC-2025-ICONE-A.png" alt="CMS" class="navbar-icon" style="height:28px;width:auto;">

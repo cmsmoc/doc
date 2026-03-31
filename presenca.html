@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Presença — CMS Montes Claros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════════════════════
+   DESIGN SYSTEM
+   Direção estética: Civic Tech — institucional mas vivo.
+   Fundo quase-branco frio, navy profundo, amarelo CMS
+   como acento único. Cards em grid compacto.
+   Personagens SVG embutidos por combinação de atributos.
+   ════════════════════════════════════════════════════ */
+:root {
+  --navy:   #0D2E5A;
+  --navy2:  #0a2347;
+  --blue:   #1B6CB5;
+  --blue-lt:#EFF6FF;
+  --green:  #0F7B4B;
+  --green-lt:#ECFDF5;
+  --yellow: #F5C400;
+  --yellow-lt:#FFFBEB;
+  --red:    #C62828;
+  --red-lt: #FEF2F2;
+  --orange: #EA580C;
+  --bg:     #F4F6F9;
+  --surface:#FFFFFF;
+  --ink:    #0F1923;
+  --muted:  #64748B;
+  --border: #E2E8EF;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+  --shadow-card:  0 2px 8px rgba(13,46,90,.07), 0 0 0 1px rgba(13,46,90,.06);
+  --shadow-pop:   0 20px 60px rgba(13,46,90,.22), 0 0 0 1px rgba(13,46,90,.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: var(--navy);
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  border-bottom: 2.5px solid var(--yellow);
+}
+.header-brand {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--yellow);
+  letter-spacing: .5px;
+}
+.header-brand span { color: rgba(255,255,255,.5); font-weight: 400; margin: 0 5px; }
+.header-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  font-family: var(--font-mono);
+}
+
+/* ── PAGE ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 28px 16px 80px; }
+
+/* ── REUNIÃO HERO ── */
+.reuniao-card {
+  background: var(--navy);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+.reuniao-card-top {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+.reuniao-numero {
+  background: var(--yellow);
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.reuniao-text { flex: 1; min-width: 0; }
+.reuniao-tipo {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  opacity: .8;
+  margin-bottom: 3px;
+}
+.reuniao-titulo {
+  font-family: var(--font-display);
+  font-size: clamp(15px, 2.5vw, 20px);
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+}
+.reuniao-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 6px;
+}
+.reuniao-meta-item {
+  font-size: 12px;
+  color: rgba(255,255,255,.6);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.reuniao-expand-btn {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: rgba(255,255,255,.7);
+  font-size: 11px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: .5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.reuniao-expand-btn:hover { background: rgba(255,255,255,.14); color: white; }
+.expand-arrow { transition: transform .25s; display: inline-block; }
+.reuniao-card.expanded .expand-arrow { transform: rotate(180deg); }
+
+.reuniao-pauta {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s cubic-bezier(.4,0,.2,1), padding .3s;
+  padding: 0 24px;
+  border-top: 0px solid rgba(255,255,255,.08);
+}
+.reuniao-card.expanded .reuniao-pauta {
+  max-height: 600px;
+  padding: 16px 24px 20px;
+  border-top-width: 1px;
+}
+.pauta-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  opacity: .8;
+  margin-bottom: 10px;
+}
+.pauta-list { list-style: none; }
+.pauta-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+}
+.pauta-item:last-child { border-bottom: none; }
+.pauta-n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--yellow);
+  opacity: .7;
+  flex-shrink: 0;
+  margin-top: 2px;
+  min-width: 22px;
+}
+
+/* ── ESTATÍSTICAS ── */
+.stats-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.stat-pill {
+  background: var(--surface);
+  border-radius: 99px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-card);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.stat-pill strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-pill.green strong { color: var(--green); }
+.stat-pill.orange strong { color: var(--orange); }
+.stat-pill.blue strong { color: var(--blue); }
+.quorum-bar {
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface);
+  border-radius: 99px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-card);
+}
+.quorum-track { flex: 1; background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
+.quorum-fill { height: 100%; background: linear-gradient(90deg, var(--green), #34D399); border-radius: 99px; transition: width .7s cubic-bezier(.4,0,.2,1); width: 0%; }
+.quorum-label { font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+
+/* ── BTN PÚBLICO ── */
+.btn-publico {
+  width: 100%;
+  background: linear-gradient(135deg, var(--blue) 0%, #0F4C8C 100%);
+  border: none;
+  border-radius: var(--radius);
+  padding: 18px 24px;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all .2s;
+  box-shadow: 0 4px 20px rgba(27,108,181,.35);
+  margin-bottom: 20px;
+  text-align: left;
+}
+.btn-publico:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(27,108,181,.45); }
+.btn-publico-left { display: flex; align-items: center; gap: 14px; }
+.btn-publico-icon {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.btn-publico-label { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.btn-publico-sub { font-size: 11px; font-weight: 400; opacity: .7; margin-top: 2px; }
+.btn-publico-count {
+  background: rgba(255,255,255,.2);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── FILTROS ── */
+.filtros-bar {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--blue); background: white; }
+.search-input::placeholder { color: var(--muted); }
+.filter-select {
+  padding: 9px 30px 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color .15s;
+  min-width: 140px;
+}
+.filter-select:focus { border-color: var(--blue); }
+.filter-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  padding: 6px 0;
+}
+
+/* ── GRID DE CONSELHEIROS ── */
+.grid-section-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.conselheiros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 32px;
+}
+@media (max-width: 480px) {
+  .conselheiros-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+}
+
+/* ── CARD DO CONSELHEIRO ── */
+.cons-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 10px 12px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: transform .15s, box-shadow .15s;
+  cursor: default;
+  border: 2px solid transparent;
+}
+.cons-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13,46,90,.12); }
+
+/* estados */
+.cons-card.presente {
+  background: var(--green-lt);
+  border-color: var(--green);
+}
+.cons-card.ausente {
+  background: var(--yellow-lt);
+  border-color: #D97706;
+}
+
+/* avatar SVG */
+.cons-avatar {
+  width: 56px; height: 56px;
+  flex-shrink: 0;
+}
+.cons-nome {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-word;
+}
+.cons-cargo {
+  font-size: 9.5px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cons-segmento-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--blue-lt);
+  color: var(--blue);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* status badge no card */
+.cons-status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* botões de ação */
+.cons-actions {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  margin-top: 2px;
+}
+.cons-btn {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 0;
+  background: var(--bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all .15s;
+  position: relative;
+}
+.cons-btn:hover { border-color: var(--blue); background: var(--blue-lt); transform: scale(1.05); }
+.cons-btn.active-presente {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.cons-btn.active-presente:hover { background: #0a6640; border-color: #0a6640; }
+.cons-btn.active-ausente {
+  background: #F59E0B;
+  border-color: #D97706;
+  color: white;
+}
+.cons-btn.active-ausente:hover { background: #D97706; }
+.cons-btn-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--navy);
+  color: white;
+  font-size: 10px;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.cons-btn:hover .cons-btn-tooltip { opacity: 1; }
+
+/* ── LISTA DO PÚBLICO ── */
+.publico-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 20px;
+}
+.publico-header {
+  background: var(--navy);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.publico-header-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: .5px;
+}
+.publico-header-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--yellow);
+}
+.publico-list {
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 54px;
+}
+.publico-chip {
+  background: var(--blue-lt);
+  border: 1px solid #BFDBFE;
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1E40AF;
+  animation: chip-in .2s ease;
+}
+@keyframes chip-in { from { opacity:0; transform: scale(.8); } to { opacity:1; transform: scale(1); } }
+.publico-empty {
+  color: var(--muted);
+  font-size: 12px;
+  padding: 6px 0;
+}
+
+/* ════════════════════════════════════════════════════
+   MODAIS
+   ════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,20,40,.6);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-pop);
+  transform: translateY(14px) scale(.97);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+.modal-header { margin-bottom: 20px; }
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.modal-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.modal-person-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.modal-person-avatar { width: 36px; height: 36px; flex-shrink: 0; }
+.modal-person-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.modal-person-cargo { font-size: 11px; color: var(--muted); }
+
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.form-input, .form-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .15s, background .15s;
+}
+.form-input:focus, .form-select:focus { border-color: var(--blue); background: white; }
+.form-input.err { border-color: var(--red); }
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
+  background-color: var(--bg);
+  padding-right: 36px;
+}
+textarea.form-input { resize: vertical; min-height: 72px; }
+.form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn-ok {
+  flex: 1;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.btn-ok:hover { background: var(--blue); }
+.btn-ok:active { transform: scale(.98); }
+.btn-ok:disabled { opacity: .5; cursor: not-allowed; }
+.btn-ok.green { background: var(--green); }
+.btn-ok.green:hover { background: #0a6640; }
+.btn-ok.red { background: var(--red); }
+.btn-cancel {
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-cancel:hover { border-color: var(--navy); color: var(--navy); }
+
+/* modal de conflito de email */
+.conflict-box {
+  background: var(--yellow-lt);
+  border: 1.5px solid #FDE68A;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #92400E;
+  line-height: 1.6;
+}
+.conflict-box strong { color: #78350F; }
+.conflict-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.conflict-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all .15s;
+}
+.conflict-btn.primary { background: var(--navy); color: white; }
+.conflict-btn.secondary { background: var(--bg); border: 1.5px solid var(--border); color: var(--muted); }
+.conflict-btn:hover { opacity: .85; }
+
+/* modal ver justificativa */
+.justif-preview {
+  background: var(--yellow-lt);
+  border: 1.5px solid #FDE68A;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin: 12px 0;
+}
+.justif-motivo {
+  font-size: 13px;
+  color: #92400E;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.justif-obs { font-size: 12px; color: #A16207; }
+
+/* ── TOAST ── */
+.toasts {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.toast {
+  background: var(--navy);
+  color: white;
+  padding: 11px 18px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  animation: toast-pop .3s cubic-bezier(.34,1.56,.64,1);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+  pointer-events: all;
+}
+.toast.ok { background: var(--green); }
+.toast.warn { background: #D97706; }
+.toast.err { background: var(--red); }
+@keyframes toast-pop { from { opacity:0; transform: scale(.8) translateY(8px); } to { opacity:1; transform: scale(1) translateY(0); } }
+
+/* ── OFFLINE BANNER ── */
+.offline-banner {
+  background: var(--orange);
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px;
+  display: none;
+}
+body.offline .offline-banner { display: block; }
+
+/* ── EMPTY ── */
+.grid-empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 40px 0;
+  color: var(--muted);
+}
+.grid-empty-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+
+/* ── LOADING ── */
+#page-loading {
+  position: fixed; inset: 0;
+  background: var(--navy);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity .4s;
+}
+#page-loading.hidden { opacity:0; pointer-events:none; }
+.loading-brand {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 800;
+  color: white; margin-bottom: 4px;
+}
+.loading-brand em { color: var(--yellow); font-style: normal; }
+.loading-sub { font-size: 11px; color: rgba(255,255,255,.4); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.loading-bar-wrap { width: 160px; height: 3px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; }
+.loading-bar { height: 100%; background: var(--yellow); border-radius: 99px; animation: load-bar 1.4s ease infinite; }
+@keyframes load-bar { 0% {width:0; margin-left:0} 50% {width:80%; margin-left:0} 100% {width:0; margin-left:100%} }
+
+/* ── RESPONSIVO ── */
+@media (max-width: 600px) {
+  .reuniao-card-top { padding: 16px; gap: 12px; }
+  .reuniao-numero { width: 46px; height: 46px; font-size: 22px; }
+  .filtros-bar { gap: 8px; }
+  .btn-publico { padding: 14px 16px; }
+  .stats-row { gap: 7px; }
+}
+</style>
+</head>
+<body>
+
+<div id="page-loading">
+  <div class="loading-brand">SerTão<em>Conselheiro</em></div>
+  <div class="loading-sub">Lista de Presença</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+</div>
+
+<div class="offline-banner">⚡ Sem conexão — alterações serão sincronizadas quando a internet voltar</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-brand">CMS<span>/</span>Montes Claros</div>
+  <div class="header-meta" id="header-sync">Conectando...</div>
+</header>
+
+<!-- PÁGINA -->
+<div class="page">
+
+  <!-- ── REUNIÃO HERO ── -->
+  <div class="reuniao-card" id="reuniao-card" onclick="togglePauta()">
+    <div class="reuniao-card-top">
+      <div class="reuniao-numero" id="reuniao-num">—</div>
+      <div class="reuniao-text">
+        <div class="reuniao-tipo">Reunião Ordinária · CMS-MOC</div>
+        <div class="reuniao-titulo" id="reuniao-titulo">Carregando...</div>
+        <div class="reuniao-meta">
+          <span class="reuniao-meta-item">📅 <span id="reuniao-data">—</span></span>
+          <span class="reuniao-meta-item">🕐 <span id="reuniao-hora">—</span></span>
+          <span class="reuniao-meta-item">📍 <span id="reuniao-local">—</span></span>
+        </div>
+      </div>
+      <button class="reuniao-expand-btn" onclick="event.stopPropagation(); togglePauta()">
+        Ver pauta <span class="expand-arrow">▼</span>
+      </button>
+    </div>
+    <div class="reuniao-pauta" id="reuniao-pauta">
+      <div class="pauta-title">Pauta da Reunião</div>
+      <ol class="pauta-list" id="pauta-list"></ol>
+    </div>
+  </div>
+
+  <!-- ── ESTATÍSTICAS ── -->
+  <div class="stats-row">
+    <div class="stat-pill green"><strong id="stat-presentes">0</strong> confirmados</div>
+    <div class="stat-pill orange"><strong id="stat-ausentes">0</strong> justificaram</div>
+    <div class="stat-pill blue"><strong id="stat-publico">0</strong> público</div>
+    <div class="quorum-bar">
+      <div class="quorum-track"><div class="quorum-fill" id="quorum-fill"></div></div>
+      <span class="quorum-label" id="quorum-txt">Quórum —%</span>
+    </div>
+  </div>
+
+  <!-- ── BTN PÚBLICO ── -->
+  <button class="btn-publico" onclick="abrirModalPublico()">
+    <div class="btn-publico-left">
+      <div class="btn-publico-icon">👥</div>
+      <div>
+        <div class="btn-publico-label">Não sou conselheiro(a)</div>
+        <div class="btn-publico-sub">Visitantes, servidores, imprensa e convidados — clique aqui</div>
+      </div>
+    </div>
+    <div class="btn-publico-count" id="btn-publico-count">0 inscritos</div>
+  </button>
+
+  <!-- ── FILTROS ── -->
+  <div class="filtros-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="busca" class="search-input" type="text" placeholder="Buscar conselheiro..." oninput="filtrar()">
+    </div>
+    <select id="filtro-segmento" class="filter-select" onchange="filtrar()">
+      <option value="">Todos os segmentos</option>
+    </select>
+    <select id="filtro-cadeira" class="filter-select" onchange="filtrar()">
+      <option value="">Titular / Suplente</option>
+      <option value="Titular">Titular</option>
+      <option value="Suplente">Suplente</option>
+    </select>
+    <span class="filter-count" id="filtro-count"></span>
+  </div>
+
+  <!-- ── GRID CONSELHEIROS ── -->
+  <div class="grid-section-title">
+    <span>📋</span> Conselheiros
+  </div>
+  <div class="conselheiros-grid" id="grid"></div>
+
+  <!-- ── LISTA PÚBLICO ── -->
+  <div class="publico-section">
+    <div class="publico-header">
+      <span class="publico-header-title">👥 Público presente</span>
+      <span class="publico-header-count" id="publico-count">0</span>
+    </div>
+    <div class="publico-list" id="publico-list">
+      <span class="publico-empty">Nenhuma inscrição ainda — seja o primeiro!</span>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ════ MODAL: JUSTIFICATIVA DE AUSÊNCIA ════ -->
+<div class="modal-overlay" id="modal-justif">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📝 Justificar ausência</div>
+      <div class="modal-sub">Registre o motivo da sua ausência nesta reunião</div>
+    </div>
+    <div class="modal-person-chip">
+      <svg class="modal-person-avatar" id="mj-avatar" viewBox="0 0 56 56"></svg>
+      <div>
+        <div class="modal-person-name" id="mj-nome">—</div>
+        <div class="modal-person-cargo" id="mj-cargo">—</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Motivo *</label>
+      <select id="mj-motivo" class="form-select">
+        <option value="">Selecione o motivo...</option>
+        <option value="Viagem a trabalho">Viagem a trabalho</option>
+        <option value="Problema de saúde">Problema de saúde</option>
+        <option value="Compromisso profissional">Compromisso profissional</option>
+        <option value="Compromisso pessoal/familiar">Compromisso pessoal/familiar</option>
+        <option value="Licença / afastamento">Licença / afastamento</option>
+        <option value="Não informado">Não informado</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Observação (opcional)</label>
+      <textarea id="mj-obs" class="form-input" placeholder="Detalhes adicionais se desejar..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fecharModal('modal-justif')">Cancelar</button>
+      <button class="btn-ok" id="btn-mj-ok" onclick="confirmarJustificativa()">✅ Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL: VER JUSTIFICATIVA ════ -->
+<div class="modal-overlay" id="modal-ver-justif">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📋 Justificativa registrada</div>
+    </div>
+    <div class="modal-person-chip">
+      <svg class="modal-person-avatar" id="mvj-avatar" viewBox="0 0 56 56"></svg>
+      <div>
+        <div class="modal-person-name" id="mvj-nome">—</div>
+        <div class="modal-person-cargo" id="mvj-cargo">—</div>
+      </div>
+    </div>
+    <div class="justif-preview">
+      <div class="justif-motivo" id="mvj-motivo">—</div>
+      <div class="justif-obs" id="mvj-obs"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fecharModal('modal-ver-justif')">Fechar</button>
+      <button class="btn-ok red" onclick="cancelarJustificativa()">❌ Cancelar justificativa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL: PÚBLICO ════ -->
+<div class="modal-overlay" id="modal-publico">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">👋 Confirmar presença</div>
+      <div class="modal-sub">Visitantes, servidores públicos, imprensa e convidados</div>
+    </div>
+    <div id="modal-publico-form">
+      <div class="form-group">
+        <label class="form-label">Nome completo *</label>
+        <input id="pub-nome" class="form-input" type="text" placeholder="Seu nome completo" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail *</label>
+        <input id="pub-email" class="form-input" type="email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cargo / Secretaria / Local de trabalho <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <input id="pub-cargo" class="form-input" type="text" placeholder="Ex: Servidor SMS, Imprensa, Estudante...">
+      </div>
+      <div id="pub-conflito" style="display:none"></div>
+    </div>
+    <div class="modal-actions" id="pub-actions">
+      <button class="btn-cancel" onclick="fecharModal('modal-publico')">Cancelar</button>
+      <button class="btn-ok green" id="btn-pub-ok" onclick="submeterPublico()">✅ Confirmar presença</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL: CONFLITO DE PRESENÇA (conselheiro) ════ -->
+<div class="modal-overlay" id="modal-conflito-cons">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⚠️ Desfazer ação?</div>
+      <div class="modal-sub" id="mcc-sub">Este conselheiro já tem uma ação registrada.</div>
+    </div>
+    <div class="modal-person-chip">
+      <svg class="modal-person-avatar" id="mcc-avatar" viewBox="0 0 56 56"></svg>
+      <div>
+        <div class="modal-person-name" id="mcc-nome">—</div>
+        <div class="modal-person-cargo" id="mcc-cargo">—</div>
+      </div>
+    </div>
+    <div id="mcc-body"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fecharModal('modal-conflito-cons')">Cancelar</button>
+      <button class="btn-ok" id="btn-mcc-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// CONFIGURAÇÃO — EDITE AQUI
+// ════════════════════════════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHjEkG3HS8gGlw0Hnns4_g5ujPplXPYKX49FbILEjIsByelW7zk_AH_66G8hNxgS9A/exec';
+
+// Dados da reunião (edite conforme a reunião real)
+const REUNIAO = {
+  numero: '118',
+  titulo: '118ª Reunião Ordinária do CMS-MOC',
+  data: '07/04/2025',
+  hora: '14h00',
+  local: 'Câmara Municipal de Montes Claros',
+  pauta: [
+    'Leitura e aprovação da ata da reunião anterior',
+    'Apresentação do Relatório de Gestão 1º trimestre 2025',
+    'Deliberação sobre o Plano Municipal de Saúde 2026-2029',
+    'Prestação de contas da SMS — Fev/Mar 2025',
+    'Informes da Presidência e das Câmaras Técnicas',
+    'Assuntos gerais',
+  ]
+};
+
+// Total de conselheiros titulares para cálculo de quórum
+const TOTAL_TITULARES = 32;
+
+// ════════════════════════════════════════════════════════════════
+// DADOS DOS CONSELHEIROS
+// Preencha com os conselheiros reais do CMS-MOC
+// Campos: id, nome, entidade, segmento, cadeira, genero ('M'|'F')
+// ════════════════════════════════════════════════════════════════
+const CONSELHEIROS = [
+[
+{id:'C001',nome:'Agna Soares da Silva Menezes',entidade:'GRS',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C002',nome:'Amanda Mendes Soares',entidade:'CLS',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C003',nome:'Ana Maria Pereira de Souza Rodrigues',entidade:'AM-PMS',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C004',nome:'Anielly Costa Silva',entidade:'Lar SVP',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C005',nome:'Cláudio Luís de Souza Santos',entidade:'SEEMG',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
+{id:'C006',nome:'Damázio Wladimir Silva',entidade:'SINDITRAUX',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
+{id:'C007',nome:'Daniella Cristina Martins Dias Veloso',entidade:'SMS-MOC',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C008',nome:'Danielle Santos Sousa',entidade:'CLS',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C009',nome:'Edmilson Alves da Silva',entidade:'CUT',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C010',nome:'Eduardo Luiz da Silva',entidade:'SMS-MOC',segmento:'Gestão',cadeira:'Titular',genero:'M'},
+{id:'C011',nome:'Emanuela Tomas da Silva Conceição',entidade:'CLS',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C012',nome:'Emille Eunice Antunes Dias Matos',entidade:'APAE',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C013',nome:'Ernandes Rodrigues Moraes',entidade:'COREN-MG',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
+{id:'C014',nome:'Fabiana Pereira Mori',entidade:'Consciência Ativa',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C015',nome:'Farley Sindeaux Ribeiro',entidade:'ANDA',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C016',nome:'Felipe Soares Amaral',entidade:'Diocese',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C017',nome:'Fernanda Fagundes Azevedo Sindeaux',entidade:'COREN-MG',segmento:'Trabalhadores',cadeira:'Titular',genero:'F'},
+{id:'C018',nome:'Fernando Antônio Dias de Andrade',entidade:'ADEMOC',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C019',nome:'Geraldo da Costa Silva',entidade:'CUT',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C020',nome:'Henrique Andrade Barbosa',entidade:'HUCF',segmento:'Gestão',cadeira:'Suplente',genero:'M'},
+{id:'C021',nome:'Herick Rodrigues Araújo',entidade:'HDG',segmento:'Gestão',cadeira:'Titular',genero:'M'},
+{id:'C022',nome:'Imaculada Conceição Barbosa',entidade:'SIND-SAÚDE',segmento:'Trabalhadores',cadeira:'Suplente',genero:'F'},
+{id:'C023',nome:'Ivany Reis Santana',entidade:'SIEESS-MG',segmento:'Trabalhadores',cadeira:'Suplente',genero:'F'},
+{id:'C024',nome:'Jamilson Gandra Moreira',entidade:'ANDA',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C025',nome:'Jaqueline Rodrigues Aguiar de Carvalho',entidade:'Associação Presente',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C026',nome:'Joel Francisco Borges',entidade:'CLS',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C027',nome:'José dos Reis Rodrigues',entidade:'CMSSVP',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C028',nome:'José Geraldo Ramos',entidade:'CMSSVP',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C029',nome:'Júlio César Araújo Lopes',entidade:'COREN-MG',segmento:'Trabalhadores',cadeira:'Suplente',genero:'M'},
+{id:'C030',nome:'Júlio César Pereira',entidade:'ADM',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C031',nome:'Júneo de Jesus Souza',entidade:'ADEMOC',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C032',nome:'Kelly Mendes Fagundes',entidade:'Fundação Capelo Gaivota',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C033',nome:'Lucimere Marta de Souza Amorim',entidade:'CODEVASF',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C034',nome:'Márcio Cardoso da Silva',entidade:'ADM',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C035',nome:'Marcos Borges Oliveira',entidade:'SINDITRAUX',segmento:'Trabalhadores',cadeira:'Suplente',genero:'M'},
+{id:'C036',nome:'Maria Clara Lelis Ramos Cardoso',entidade:'SMS-MOC',segmento:'Gestão',cadeira:'Titular',genero:'F'},
+{id:'C037',nome:'Maria dos Reis Ribeiro Dias',entidade:'Diocese',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C038',nome:'Mariana Cristina Meira Cambuí',entidade:'ABO',segmento:'Trabalhadores',cadeira:'Suplente',genero:'F'},
+{id:'C039',nome:'Marilda Batista da Silva',entidade:'Consciência Ativa',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C040',nome:'Maurina da Silva Carvalho',entidade:'GRAPPA',segmento:'Gestão',cadeira:'Titular',genero:'F'},
+{id:'C041',nome:'Mônica de Fátima Fernandes Ferreira',entidade:'SEEMG',segmento:'Trabalhadores',cadeira:'Suplente',genero:'F'},
+{id:'C042',nome:'Naiara Oliveira Silva',entidade:'STR',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C043',nome:'Nayra Cristine Lacerda Loures',entidade:'Santa Casa',segmento:'Gestão',cadeira:'Titular',genero:'F'},
+{id:'C044',nome:'Patricia Antunes dos Santos',entidade:'Fundação Clarice Albuquerque',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C045',nome:'Rafael Carvalho Maciel',entidade:'Rotary',segmento:'Usuários',cadeira:'Titular',genero:'M'},
+{id:'C046',nome:'Rafaela de Souza Freitas',entidade:'SRS',segmento:'Gestão',cadeira:'Titular',genero:'F'},
+{id:'C047',nome:'Raimara Gonçalves Pereira',entidade:'SMS-MOC',segmento:'Gestão',cadeira:'Suplente',genero:'F'},
+{id:'C048',nome:'Ricardo Soares de Oliveira',entidade:'COREN-MG',segmento:'Trabalhadores',cadeira:'Suplente',genero:'M'},
+{id:'C049',nome:'Rogério Gonçalves',entidade:'AM-PMS',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C050',nome:'Rosana Soares Ruas',entidade:'Fundação Sara',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C051',nome:'Ruth Alves Xavier Silva',entidade:'STR',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C052',nome:'Sandra Simone Mendes Gonçalves Carnielle',entidade:'Associação Presente',segmento:'Usuários',cadeira:'Titular',genero:'F'},
+{id:'C053',nome:'Sandra Vanelle Fonseca',entidade:'Fundação Sara',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C054',nome:'Sheilla Silva Mendes',entidade:'ABO',segmento:'Trabalhadores',cadeira:'Titular',genero:'F'},
+{id:'C055',nome:'Terezinha Ramos Cordeiro',entidade:'CLS',segmento:'Usuários',cadeira:'Suplente',genero:'F'},
+{id:'C056',nome:'Thiago Henrique Alves de Souza',entidade:'Rotary',segmento:'Usuários',cadeira:'Suplente',genero:'M'},
+{id:'C057',nome:'Valdeci Alves Costa',entidade:'SIND-SAÚDE',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
+{id:'C058',nome:'Washington Luis Carvalho Souto',entidade:'SIEESS-MG',segmento:'Trabalhadores',cadeira:'Titular',genero:'M'},
+{id:'C059',nome:'Wilhas Ferreira',entidade:'CLS',segmento:'Usuários',cadeira:'Suplente',genero:'M'}
+]
+].sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+
+// ════════════════════════════════════════════════════════════════
+// ESTADO
+// ════════════════════════════════════════════════════════════════
+const State = {
+  status: {},      // { id: { tipo:'presente'|'ausente', motivo?:'', obs?:'' } }
+  publico: [],     // [{ nome, email, cargo, abreviado }]
+  _justifTarget: null,
+  _conflitoTarget: null,
+  _conflitoAcao: null,
+};
+
+// ════════════════════════════════════════════════════════════════
+// AVATARES SVG
+// ════════════════════════════════════════════════════════════════
+const CORES_SEGMENTO = {
+  'Gestão':       { bg:'#DBEAFE', corpo:'#1B6CB5', pele:'#FDDCB5' },
+  'Trabalhadores':{ bg:'#D1FAE5', corpo:'#0F7B4B', pele:'#FDDCB5' },
+  'Usuários':     { bg:'#EDE9FE', corpo:'#6D28D9', pele:'#FDDCB5' },
+  'Prestadores':  { bg:'#FEF3C7', corpo:'#D97706', pele:'#FDDCB5' },
+  'default':      { bg:'#F1F5F9', corpo:'#64748B', pele:'#FDDCB5' },
+};
+
+function gerarAvatar(genero, segmento, tamanho = 56) {
+  const c = CORES_SEGMENTO[segmento] || CORES_SEGMENTO['default'];
+  const isFem = genero === 'F';
+  const pele = c.pele;
+  const corpo = c.corpo;
+  const bg = c.bg;
+
+  const cabelo = isFem
+    ? `<ellipse cx="28" cy="17" rx="12" ry="5" fill="${corpo}" opacity=".9"/>
+       <path d="M16 17 Q16 32 18 36 Q20 40 28 40 Q36 40 38 36 Q40 32 40 17" fill="${corpo}" opacity=".6"/>`
+    : `<path d="M17 19 Q17 13 28 12 Q39 13 39 19" fill="${corpo}" opacity=".9"/>`;
+
+  const roupa = isFem
+    ? `<path d="M18 42 Q18 52 28 52 Q38 52 38 42 L36 38 Q32 36 28 36 Q24 36 20 38Z" fill="${corpo}"/>`
+    : `<path d="M17 42 Q17 52 28 52 Q39 52 39 42 L37 38 Q32 35 28 35 Q24 35 19 38Z" fill="${corpo}"/>`;
+
+  return `<svg viewBox="0 0 56 56" width="${tamanho}" height="${tamanho}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="56" height="56" rx="12" fill="${bg}"/>
+    ${cabelo}
+    <circle cx="28" cy="22" r="10" fill="${pele}"/>
+    <circle cx="24.5" cy="21" r="1.5" fill="${corpo}" opacity=".7"/>
+    <circle cx="31.5" cy="21" r="1.5" fill="${corpo}" opacity=".7"/>
+    <path d="M24.5 26 Q28 29 31.5 26" stroke="${corpo}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".6"/>
+    ${roupa}
+  </svg>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// RENDER DA REUNIÃO
+// ════════════════════════════════════════════════════════════════
+function renderReuniao() {
+  document.getElementById('reuniao-num').textContent = REUNIAO.numero;
+  document.getElementById('reuniao-titulo').textContent = REUNIAO.titulo;
+  document.getElementById('reuniao-data').textContent = REUNIAO.data;
+  document.getElementById('reuniao-hora').textContent = REUNIAO.hora;
+  document.getElementById('reuniao-local').textContent = REUNIAO.local;
+
+  const lista = document.getElementById('pauta-list');
+  lista.innerHTML = REUNIAO.pauta.map((item, i) =>
+    `<li class="pauta-item"><span class="pauta-n">${String(i+1).padStart(2,'0')}.</span><span>${esc(item)}</span></li>`
+  ).join('');
+}
+
+function togglePauta() {
+  document.getElementById('reuniao-card').classList.toggle('expanded');
+}
+
+// ════════════════════════════════════════════════════════════════
+// RENDER DO GRID
+// ════════════════════════════════════════════════════════════════
+function filtrar() {
+  const busca   = (document.getElementById('busca').value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const seg     = document.getElementById('filtro-segmento').value;
+  const cadeira = document.getElementById('filtro-cadeira').value;
+
+  const filtered = CONSELHEIROS.filter(c => {
+    const nome_norm = c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if (busca && !nome_norm.includes(busca)) return false;
+    if (seg && c.segmento !== seg) return false;
+    if (cadeira && c.cadeira !== cadeira) return false;
+    return true;
+  });
+
+  document.getElementById('filtro-count').textContent =
+    filtered.length < CONSELHEIROS.length
+      ? filtered.length + ' de ' + CONSELHEIROS.length
+      : CONSELHEIROS.length + ' conselheiros';
+
+  renderGrid(filtered);
+}
+
+function renderGrid(list) {
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="grid-empty">
+      <span class="grid-empty-icon">🔍</span>
+      Nenhum conselheiro encontrado para este filtro.
+    </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(c => renderCard(c)).join('');
+}
+
+function renderCard(c) {
+  const st = State.status[c.id];
+  const isPresente = st?.tipo === 'presente';
+  const isAusente  = st?.tipo === 'ausente';
+  const cardClass  = isPresente ? 'presente' : isAusente ? 'ausente' : '';
+  const statusBadge = isPresente ? '✅' : isAusente ? '📋' : '';
+
+  const avatar = gerarAvatar(c.genero, c.segmento);
+  const primeiroNome = c.nome.split(' ')[0];
+  const segBadge = c.segmento ? `<div class="cons-segmento-badge">${esc(c.segmento)}</div>` : '';
+
+  return `<div class="cons-card ${cardClass}" id="card-${c.id}">
+    ${statusBadge ? `<span class="cons-status-badge">${statusBadge}</span>` : ''}
+    <div class="cons-avatar">${avatar}</div>
+    <div class="cons-nome">${esc(primeiroNome)}<br><span style="font-weight:500;opacity:.7">${esc(c.nome.split(' ').slice(1).join(' '))}</span></div>
+    ${segBadge}
+    <div class="cons-actions">
+      <button class="cons-btn ${isPresente ? 'active-presente' : ''}"
+        onclick="acaoPresenca('${c.id}')"
+        title="${isPresente ? 'Clique para desmarcar' : 'Confirmar presença'}">
+        ✋
+        <span class="cons-btn-tooltip">${isPresente ? 'Desmarcar' : 'Confirmar presença'}</span>
+      </button>
+      <button class="cons-btn ${isAusente ? 'active-ausente' : ''}"
+        onclick="acaoAusencia('${c.id}')"
+        title="${isAusente ? 'Ver justificativa' : 'Justificar ausência'}">
+        📋
+        <span class="cons-btn-tooltip">${isAusente ? 'Ver/cancelar' : 'Justificar ausência'}</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+function atualizarCard(id) {
+  const c = CONSELHEIROS.find(x => x.id === id);
+  if (!c) return;
+  const el = document.getElementById('card-' + id);
+  if (!el) return;
+  el.outerHTML = renderCard(c);
+}
+
+// ════════════════════════════════════════════════════════════════
+// AÇÕES DOS CONSELHEIROS
+// ════════════════════════════════════════════════════════════════
+function acaoPresenca(id) {
+  const c  = CONSELHEIROS.find(x => x.id === id);
+  const st = State.status[id];
+
+  if (st?.tipo === 'presente') {
+    // já marcou — desmarcar
+    delete State.status[id];
+    atualizarCard(id);
+    atualizarStats();
+    salvarAcao(id, c.nome, 'desmarcou_presenca', '');
+    toast('Presença removida de ' + c.nome.split(' ')[0], 'warn');
+    return;
+  }
+
+  if (st?.tipo === 'ausente') {
+    // tem justificativa — confirmar cancelamento
+    abrirConflitoConselheiro(id, 'presenca');
+    return;
+  }
+
+  // Livre — marcar
+  State.status[id] = { tipo: 'presente' };
+  atualizarCard(id);
+  atualizarStats();
+  salvarAcao(id, c.nome, 'marcou_presenca', '');
+  toast('✅ Presença confirmada: ' + c.nome.split(' ')[0], 'ok');
+}
+
+function acaoAusencia(id) {
+  const c  = CONSELHEIROS.find(x => x.id === id);
+  const st = State.status[id];
+
+  if (st?.tipo === 'ausente') {
+    // Já tem — abrir modal para ver / cancelar
+    abrirVerJustificativa(id);
+    return;
+  }
+
+  if (st?.tipo === 'presente') {
+    // Tem presença — avisar
+    abrirConflitoConselheiro(id, 'ausencia');
+    return;
+  }
+
+  // Livre — abrir modal de justificativa
+  abrirModalJustificativa(id);
+}
+
+// ─── Modal de justificativa ──────────────────────────────────
+function abrirModalJustificativa(id) {
+  const c = CONSELHEIROS.find(x => x.id === id);
+  State._justifTarget = id;
+  document.getElementById('mj-nome').textContent  = c.nome;
+  document.getElementById('mj-cargo').textContent = c.cadeira + ' · ' + c.segmento;
+  document.getElementById('mj-avatar').innerHTML  = gerarAvatar(c.genero, c.segmento, 36);
+  document.getElementById('mj-motivo').value = '';
+  document.getElementById('mj-obs').value = '';
+  abrirModal('modal-justif');
+}
+
+function confirmarJustificativa() {
+  const id = State._justifTarget;
+  const motivo = document.getElementById('mj-motivo').value;
+  const obs    = document.getElementById('mj-obs').value.trim();
+
+  if (!motivo) {
+    toast('Selecione o motivo da ausência.', 'warn');
+    document.getElementById('mj-motivo').style.borderColor = 'var(--red)';
+    return;
+  }
+  document.getElementById('mj-motivo').style.borderColor = '';
+
+  const c = CONSELHEIROS.find(x => x.id === id);
+  State.status[id] = { tipo: 'ausente', motivo, obs };
+  fecharModal('modal-justif');
+  atualizarCard(id);
+  atualizarStats();
+  salvarAcao(id, c.nome, 'justificou_ausencia', motivo + (obs ? ' | ' + obs : ''));
+  toast('📋 Ausência justificada: ' + c.nome.split(' ')[0], 'warn');
+}
+
+// ─── Ver justificativa ───────────────────────────────────────
+function abrirVerJustificativa(id) {
+  const c  = CONSELHEIROS.find(x => x.id === id);
+  const st = State.status[id];
+  State._justifTarget = id;
+  document.getElementById('mvj-nome').textContent  = c.nome;
+  document.getElementById('mvj-cargo').textContent = c.cadeira + ' · ' + c.segmento;
+  document.getElementById('mvj-avatar').innerHTML  = gerarAvatar(c.genero, c.segmento, 36);
+  document.getElementById('mvj-motivo').textContent = '📌 ' + (st?.motivo || '—');
+  document.getElementById('mvj-obs').textContent = st?.obs ? '💬 ' + st.obs : '';
+  abrirModal('modal-ver-justif');
+}
+
+function cancelarJustificativa() {
+  const id = State._justifTarget;
+  const c  = CONSELHEIROS.find(x => x.id === id);
+  delete State.status[id];
+  fecharModal('modal-ver-justif');
+  atualizarCard(id);
+  atualizarStats();
+  salvarAcao(id, c.nome, 'cancelou_justificativa', '');
+  toast('Justificativa cancelada', 'warn');
+}
+
+// ─── Conflito conselheiro ────────────────────────────────────
+function abrirConflitoConselheiro(id, acaoDesejada) {
+  const c  = CONSELHEIROS.find(x => x.id === id);
+  const st = State.status[id];
+  State._conflitoTarget  = id;
+  State._conflitoAcao    = acaoDesejada;
+
+  document.getElementById('mcc-nome').textContent  = c.nome;
+  document.getElementById('mcc-cargo').textContent = c.cadeira + ' · ' + c.segmento;
+  document.getElementById('mcc-avatar').innerHTML  = gerarAvatar(c.genero, c.segmento, 36);
+
+  const btn = document.getElementById('btn-mcc-ok');
+
+  if (acaoDesejada === 'presenca' && st?.tipo === 'ausente') {
+    document.getElementById('mcc-sub').textContent = 'Este conselheiro tem ausência justificada.';
+    document.getElementById('mcc-body').innerHTML = `
+      <div class="justif-preview">
+        <div class="justif-motivo">📌 ${esc(st.motivo)}</div>
+        ${st.obs ? `<div class="justif-obs">💬 ${esc(st.obs)}</div>` : ''}
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Deseja cancelar a justificativa e marcar presença?</p>`;
+    btn.textContent = '✅ Cancelar justificativa e marcar presença';
+    btn.className   = 'btn-ok green';
+  } else if (acaoDesejada === 'ausencia' && st?.tipo === 'presente') {
+    document.getElementById('mcc-sub').textContent = 'Este conselheiro já tem presença confirmada.';
+    document.getElementById('mcc-body').innerHTML = `
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Deseja remover a presença e registrar uma justificativa de ausência?</p>`;
+    btn.textContent = '📋 Remover presença e justificar';
+    btn.className   = 'btn-ok';
+  }
+
+  btn.onclick = confirmarConflito;
+  abrirModal('modal-conflito-cons');
+}
+
+function confirmarConflito() {
+  const id = State._conflitoTarget;
+  const c  = CONSELHEIROS.find(x => x.id === id);
+
+  fecharModal('modal-conflito-cons');
+
+  if (State._conflitoAcao === 'presenca') {
+    State.status[id] = { tipo: 'presente' };
+    atualizarCard(id);
+    atualizarStats();
+    salvarAcao(id, c.nome, 'marcou_presenca_cancelando_justif', '');
+    toast('✅ Presença marcada, justificativa removida', 'ok');
+  } else {
+    delete State.status[id];
+    atualizarCard(id);
+    setTimeout(() => abrirModalJustificativa(id), 200);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// PÚBLICO
+// ════════════════════════════════════════════════════════════════
+function abrirModalPublico() {
+  document.getElementById('pub-nome').value  = '';
+  document.getElementById('pub-email').value = '';
+  document.getElementById('pub-cargo').value = '';
+  document.getElementById('pub-conflito').style.display = 'none';
+  document.getElementById('pub-conflito').innerHTML = '';
+  document.getElementById('btn-pub-ok').disabled = false;
+  document.getElementById('btn-pub-ok').textContent = '✅ Confirmar presença';
+  ['pub-nome','pub-email'].forEach(id => document.getElementById(id).classList.remove('err'));
+  abrirModal('modal-publico');
+  setTimeout(() => document.getElementById('pub-nome').focus(), 250);
+}
+
+async function submeterPublico() {
+  const nome  = document.getElementById('pub-nome').value.trim();
+  const email = document.getElementById('pub-email').value.trim().toLowerCase();
+  const cargo = document.getElementById('pub-cargo').value.trim();
+
+  let ok = true;
+  if (!nome)  { document.getElementById('pub-nome').classList.add('err');  ok = false; }
+  else          document.getElementById('pub-nome').classList.remove('err');
+  if (!email || !email.includes('@')) { document.getElementById('pub-email').classList.add('err'); ok = false; }
+  else          document.getElementById('pub-email').classList.remove('err');
+  if (!ok) { toast('Preencha nome e e-mail válidos.', 'warn'); return; }
+
+  const btn = document.getElementById('btn-pub-ok');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+
+  // Verificar duplicata localmente
+  const existente = State.publico.find(p => p.email === email);
+  if (existente) {
+    const mesmoNome = existente.nome.toLowerCase() === nome.toLowerCase();
+    if (mesmoNome) {
+      // Exatamente igual — bloquear
+      document.getElementById('pub-conflito').style.display = '';
+      document.getElementById('pub-conflito').innerHTML = `
+        <div class="conflict-box">
+          <strong>Você já está inscrito(a)!</strong><br>
+          Este nome e e-mail já foram registrados nesta reunião.
+        </div>`;
+      btn.disabled = false; btn.textContent = '✅ Confirmar presença';
+      return;
+    } else {
+      // Mesmo email, outro nome — oferecer opções
+      document.getElementById('pub-conflito').style.display = '';
+      document.getElementById('pub-conflito').innerHTML = `
+        <div class="conflict-box">
+          <strong>⚠️ E-mail já utilizado</strong><br>
+          O e-mail <strong>${esc(email)}</strong> já foi registrado com o nome <strong>${esc(existente.nome)}</strong>.<br>
+          <div class="conflict-actions">
+            <button class="conflict-btn primary" onclick="registrarComoOutraPessoa('${esc(nome)}','${esc(email)}','${esc(cargo)}')">
+              Estou me inscrevendo para outra pessoa
+            </button>
+            <button class="conflict-btn secondary" onclick="fecharModal('modal-publico')">
+              Cancelar
+            </button>
+          </div>
+        </div>`;
+      btn.disabled = false; btn.textContent = '✅ Confirmar presença';
+      return;
+    }
+  }
+
+  await finalizarInscricaoPublico(nome, email, cargo);
+  btn.disabled = false; btn.textContent = '✅ Confirmar presença';
+}
+
+async function registrarComoOutraPessoa(nome, email, cargo) {
+  fecharModal('modal-publico');
+  await finalizarInscricaoPublico(nome, email, cargo + (cargo ? ' (via ' + email + ')' : email));
+}
+
+async function finalizarInscricaoPublico(nome, email, cargo) {
+  const abreviado = abreviarNome(nome);
+  const entrada   = { nome, email, cargo, abreviado };
+  State.publico.push(entrada);
+  renderPublico();
+  atualizarStats();
+  fecharModal('modal-publico');
+  await salvarPublico(entrada);
+  toast('🎉 Presença registrada! Bem-vindo(a), ' + nome.split(' ')[0] + '!', 'ok');
+}
+
+function abreviarNome(nome) {
+  const partes = nome.trim().split(/\s+/);
+  if (partes.length === 1) return partes[0];
+  return partes[0] + ' ' + partes[partes.length - 1][0] + '.';
+}
+
+function renderPublico() {
+  const list = document.getElementById('publico-list');
+  const count = document.getElementById('publico-count');
+  count.textContent = State.publico.length;
+  document.getElementById('btn-publico-count').textContent = State.publico.length + ' inscritos';
+
+  if (!State.publico.length) {
+    list.innerHTML = '<span class="publico-empty">Nenhuma inscrição ainda — seja o primeiro!</span>';
+    return;
+  }
+  list.innerHTML = State.publico.map(p =>
+    `<span class="publico-chip">${esc(p.abreviado)}</span>`
+  ).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// ESTATÍSTICAS
+// ════════════════════════════════════════════════════════════════
+function atualizarStats() {
+  const presentes = Object.values(State.status).filter(s => s.tipo === 'presente').length;
+  const ausentes  = Object.values(State.status).filter(s => s.tipo === 'ausente').length;
+  const pubN      = State.publico.length;
+
+  document.getElementById('stat-presentes').textContent = presentes;
+  document.getElementById('stat-ausentes').textContent  = ausentes;
+  document.getElementById('stat-publico').textContent   = pubN;
+
+  const pct = Math.min(100, Math.round(presentes / TOTAL_TITULARES * 100));
+  document.getElementById('quorum-fill').style.width = pct + '%';
+  const quorum = Math.ceil(TOTAL_TITULARES / 2) + 1;
+  document.getElementById('quorum-txt').textContent =
+    presentes >= quorum ? `✅ Quórum atingido (${pct}%)` : `Quórum ${pct}% (faltam ${quorum - presentes})`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// MODAIS
+// ════════════════════════════════════════════════════════════════
+function abrirModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('open');
+  State._justifTarget = null;
+}
+document.addEventListener('click', e => {
+  ['modal-justif','modal-ver-justif','modal-publico','modal-conflito-cons'].forEach(id => {
+    if (e.target === document.getElementById(id)) fecharModal(id);
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['modal-justif','modal-ver-justif','modal-publico','modal-conflito-cons'].forEach(fecharModal);
+  }
+});
+// Enter nos inputs do público
+['pub-nome','pub-email','pub-cargo'].forEach(id => {
+  document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') submeterPublico(); });
+});
+
+// ════════════════════════════════════════════════════════════════
+// GAS — BACKEND
+// ════════════════════════════════════════════════════════════════
+function salvarAcao(idCons, nome, acao, detalhe) {
+  if (!GAS_URL || GAS_URL === 'COLE_AQUI_A_URL_DO_GAS_PRESENCA') return;
+  const qs = new URLSearchParams({
+    action: 'presencaAcao',
+    id_cons: idCons,
+    nome,
+    acao,
+    detalhe,
+    status: State.status[idCons]?.tipo || 'sem_status',
+    reuniao: REUNIAO.numero
+  });
+  fetch(GAS_URL + '?' + qs).catch(() => {});
+}
+
+async function salvarPublico(entrada) {
+  if (!GAS_URL || GAS_URL === 'COLE_AQUI_A_URL_DO_GAS_PRESENCA') return;
+  const qs = new URLSearchParams({
+    action: 'presencaPublico',
+    nome: entrada.nome,
+    email: entrada.email,
+    cargo: entrada.cargo,
+    reuniao: REUNIAO.numero
+  });
+  try { await fetch(GAS_URL + '?' + qs); } catch(e) {}
+}
+
+async function carregarEstadoInicial() {
+  if (!GAS_URL || GAS_URL === 'COLE_AQUI_A_URL_DO_GAS_PRESENCA') {
+    document.getElementById('header-sync').textContent = 'Modo local (sem GAS)';
+    return;
+  }
+  try {
+    const res = await fetch(GAS_URL + '?action=presencaGetEstado&reuniao=' + REUNIAO.numero);
+    const data = await res.json();
+    if (data.success) {
+      (data.conselheiros || []).forEach(r => {
+        if (r.tipo === 'presente' || r.tipo === 'ausente') {
+          State.status[r.id_cons] = { tipo: r.tipo, motivo: r.motivo || '', obs: r.obs || '' };
+        }
+      });
+      (data.publico || []).forEach(p => {
+        State.publico.push({ nome: p.nome, email: p.email, cargo: p.cargo, abreviado: abreviarNome(p.nome) });
+      });
+      renderGrid(CONSELHEIROS);
+      renderPublico();
+      atualizarStats();
+      document.getElementById('header-sync').textContent = '✅ Sincronizado';
+    }
+  } catch(e) {
+    document.getElementById('header-sync').textContent = '⚠️ Sem conexão';
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// FILTROS INICIAIS
+// ════════════════════════════════════════════════════════════════
+function iniciarFiltros() {
+  const segs = [...new Set(CONSELHEIROS.map(c => c.segmento).filter(Boolean))].sort();
+  const sel  = document.getElementById('filtro-segmento');
+  segs.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s;
+    sel.appendChild(opt);
+  });
+  document.getElementById('filtro-count').textContent = CONSELHEIROS.length + ' conselheiros';
+}
+
+// ════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════
+function toast(msg, tipo = '') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + tipo;
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'scale(.8)'; el.style.transition = '.3s'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+
+// ════════════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+window.addEventListener('online',  () => document.body.classList.remove('offline'));
+window.addEventListener('offline', () => document.body.classList.add('offline'));
+
+// ════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════
+async function init() {
+  renderReuniao();
+  iniciarFiltros();
+  renderGrid(CONSELHEIROS);
+  renderPublico();
+  atualizarStats();
+
+  await carregarEstadoInicial();
+
+  document.getElementById('page-loading').classList.add('hidden');
+  setTimeout(() => document.getElementById('page-loading').remove(), 500);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- ════════════════════════════════════════════════════════════
+     CODE.GS PARA O BACKEND
+     Instruções: Crie um novo Google Apps Script separado
+     (não o do SerTão Conselheiro principal).
+     Vá em script.google.com → Novo projeto → cole o código abaixo.
+     Implante como Web App: "Qualquer usuário, inclusive anônimos".
+     Cole a URL gerada em GAS_URL acima.
+     ════════════════════════════════════════════════════════════
+/*
+// ── Cole no Apps Script (Code.gs) ──────────────────────────
+
+const SHEET_ID_PRESENCA = 'COLE_AQUI_O_ID_DA_SUA_PLANILHA';
+
+function doGet(e) {
+  const p = e.parameter || {};
+  let result;
+  try {
+    switch(p.action) {
+      case 'presencaAcao':      result = handleAcao(p);       break;
+      case 'presencaPublico':   result = handlePublico(p);    break;
+      case 'presencaGetEstado': result = handleGetEstado(p);  break;
+      default:                  result = {success:false,msg:'ação inválida'};
+    }
+  } catch(err) {
+    result = {success:false,msg:err.message};
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Aba: PRESENCA_STATUS — estado atual de cada conselheiro
+function handleAcao(p) {
+  const ss     = SpreadsheetApp.openById(SHEET_ID_PRESENCA);
+  const shLog  = getOrCreate(ss, 'PRESENCA_LOG',    ['TIMESTAMP','REUNIAO','ID_CONS','NOME','ACAO','DETALHE','STATUS']);
+  const shStat = getOrCreate(ss, 'PRESENCA_STATUS', ['REUNIAO','ID_CONS','NOME','TIPO','MOTIVO','OBS','UPDATED']);
+
+  const reuniao = p.reuniao || '';
+  const idCons  = p.id_cons  || '';
+  const nome    = p.nome     || '';
+  const acao    = p.acao     || '';
+  const detalhe = p.detalhe  || '';
+  const status  = p.status   || '';
+
+  // Log sempre
+  shLog.appendRow([new Date(), reuniao, idCons, nome, acao, detalhe, status]);
+
+  // Atualizar status
+  const rows = shStat.getDataRange().getValues();
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][0] === reuniao && rows[i][1] === idCons) {
+      if (status === 'sem_status') {
+        shStat.deleteRow(i + 1);
+      } else {
+        shStat.getRange(i+1,4,1,4).setValues([[
+          status,
+          detalhe.includes('|') ? detalhe.split('|')[0].trim() : detalhe,
+          detalhe.includes('|') ? detalhe.split('|')[1].trim() : '',
+          new Date()
+        ]]);
+      }
+      return {success:true};
+    }
+  }
+  if (status !== 'sem_status') {
+    const motivo = detalhe.includes('|') ? detalhe.split('|')[0].trim() : detalhe;
+    const obs    = detalhe.includes('|') ? detalhe.split('|')[1].trim() : '';
+    shStat.appendRow([reuniao, idCons, nome, status, motivo, obs, new Date()]);
+  }
+  return {success:true};
+}
+
+// Aba: PRESENCA_PUBLICO
+function handlePublico(p) {
+  const ss   = SpreadsheetApp.openById(SHEET_ID_PRESENCA);
+  const sh   = getOrCreate(ss, 'PRESENCA_PUBLICO', ['TIMESTAMP','REUNIAO','NOME','EMAIL','CARGO']);
+  sh.appendRow([new Date(), p.reuniao||'', p.nome||'', p.email||'', p.cargo||'']);
+  return {success:true};
+}
+
+// Retorna o estado atual para re-hidratar a página
+function handleGetEstado(p) {
+  const ss      = SpreadsheetApp.openById(SHEET_ID_PRESENCA);
+  const reuniao = p.reuniao || '';
+
+  const shStat = ss.getSheetByName('PRESENCA_STATUS');
+  const shPub  = ss.getSheetByName('PRESENCA_PUBLICO');
+
+  const conselheiros = shStat ? shStat.getDataRange().getValues().slice(1)
+    .filter(r => r[0] === reuniao)
+    .map(r => ({id_cons:r[1], nome:r[2], tipo:r[3], motivo:r[4], obs:r[5]})) : [];
+
+  const publico = shPub ? shPub.getDataRange().getValues().slice(1)
+    .filter(r => r[1] === reuniao)
+    .map(r => ({nome:r[2], email:r[3], cargo:r[4]})) : [];
+
+  return {success:true, conselheiros, publico};
+}
+
+function getOrCreate(ss, nome, headers) {
+  let sh = ss.getSheetByName(nome);
+  if (!sh) {
+    sh = ss.insertSheet(nome);
+    sh.getRange(1,1,1,headers.length).setValues([headers]);
+    sh.getRange(1,1,1,headers.length).setBackground('#0D2E5A').setFontColor('#FFFFFF').setFontWeight('bold');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+*/
+-->
+</body>
+</html>
