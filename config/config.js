@@ -29,7 +29,7 @@ const CONFIG = {
 
   // OneSignal Push Notifications
   // Configure em: https://app.onesignal.com → seu app → Settings → Keys & IDs
-  ONESIGNAL_APP_ID:    'SEU_APP_ID_AQUI',    // ← substitua
+  ONESIGNAL_APP_ID:    'a2f4b3a1-4daf-404b-9647-23d85f6dab0d',    // ← substitua
   ONESIGNAL_SAFARI_ID: '',                   // ← opcional (Safari macOS)
 
   BRAND: {
