@@ -1,0 +1,8 @@
+{
+  "change_log": [
+    {
+      "date": "2026-07-24",
+      "changes": "Corrigido 'buraco branco' (margin collapse) entre lib-hero e search-strip no index.html substituindo a variável CSS não definida var(--space-7) por var(--space-8). Correção replicada no dashboard.html e home.html, além de ajuste de var(--space-9) para var(--space-10) em dashboard.html."
+    }
+  ]
+}
